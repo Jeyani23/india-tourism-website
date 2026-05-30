@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explore Kerala - God's Own Country</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+        }
+
+        /* HERO SECTION */
+        .hero {
+            height: 350px;
+            /* Using the Alappuzha Backwaters image you provided */
+            background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url("https://www.gokitetours.com/wp-content/uploads/2024/03/Top-10-beautiful-hill-stations-in-Munnar-1200x900.webp");
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            text-shadow: 2px 2px 6px black;
+        }
+
+        .hero h1 { font-size: 50px; margin: 0; }
+        .hero p { font-size: 20px; }
+
+        /* INFO CARDS */
+        .infoCards {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: -40px;
+        }
+
+        .infoCard {
+            background: white;
+            padding: 20px;
+            width: 180px;
+            text-align: center;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .sectionTitle {
+            text-align: center;
+            margin-top: 50px;
+            color: #FF9933;
+        }
+
+        /* PLACES GRID */
+        .places {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            padding: 40px;
+        }
+
+        .placeCard {
+            position: relative;
+            cursor: pointer;
+            overflow: hidden;
+            border-radius: 10px;
+        }
+
+        .placeCard img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            transition: 0.4s;
+        }
+
+        .placeCard:hover img { transform: scale(1.1); }
+
+        .overlay {
+            position: absolute;
+            bottom: 0;
+            background: rgba(0,0,0,0.6);
+            color: white;
+            width: 100%;
+            text-align: center;
+            padding: 10px;
+        }
+
+        /* MODAL POPUP */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modalContent {
+            background: white;
+            padding: 30px;
+            width: 500px;
+            border-radius: 8px;
+            text-align: center;
+            position: relative;
+        }
+
+        .modalContent img { width: 100%; height: 250px; object-fit: cover; }
+
+        .close {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 30px;
+            cursor: pointer;
+        }
+
+        /* CUISINE SECTION */
+        .cuisine {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            padding: 40px;
+        }
+
+        .foodCard {
+            background: white;
+            text-align: center;
+            border-radius: 8px;
+            padding: 10px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+        }
+
+        .foodCard img { width: 100%; height: 150px; object-fit: cover; }
+
+        /* LITERATURE SECTION */
+        .literature {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            padding: 40px;
+        }
+
+        .litCard {
+            background: white;
+            padding: 15px;
+            border-left: 5px solid #138808;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+        }
+
+        .litCard img { width: 100%; height: 180px; object-fit: cover; }
+
+        .malayalamLine {
+            color: #138808;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .places, .literature, .cuisine { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="hero">
+        <h1>Explore Kerala</h1>
+        <p>God's Own Country</p>
+    </div>
+
+    <div class="infoCards">
+        <div class="infoCard"><h3>Capital</h3><p>Thiruvananthapuram</p></div>
+        <div class="infoCard"><h3>Languages</h3><p>Malayalam, English</p></div>
+        <div class="infoCard"><h3>Best Time</h3><p>Sept – March</p></div>
+        <div class="infoCard"><h3>Major Cities</h3><p>Kochi, Kozhikode, Thrissur</p></div>
+    </div>
+
+    <h2 class="sectionTitle">Famous Tourist Places</h2>
+    <div class="places" id="placesGrid"></div>
+
+    <div class="modal" id="placeModal">
+        <div class="modalContent">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <img src="" id="modalImg" alt="">
+            <h2 id="modalTitle"></h2>
+            <p id="modalDesc"></p>
+        </div>
+    </div>
+
+    <h2 class="sectionTitle">Kerala Cuisine</h2>
+    <div class="cuisine" id="cuisineGrid"></div>
+
+    <h2 class="sectionTitle">Malayalam Literature</h2>
+    <div class="literature" id="litGrid"></div>
+
+    <script>
+        const places = [
+            { name: "Munnar Hills", img: "https://www.gokitetours.com/wp-content/uploads/2024/03/Top-10-beautiful-hill-stations-in-Munnar-1200x900.webp", desc: "Munnar is a beautiful hill station in Kerala known for its tea plantations, cool climate and scenic mountains." },
+            { name: "Alleppey Backwaters", img: "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/13/5e/59/d4/alleppey-backwater-tour.jpg?w=800&h=-1&s=1", desc: "Alleppey is famous for its backwaters and houseboat cruises through canals surrounded by coconut trees." },
+            { name: "Kovalam Beach", img: "https://s7ap1.scene7.com/is/image/incredibleindia/kovalam-beach-thiruvananthapuram-kerala-2-attr-hero?qlt=82&ts=1742152368699", desc: "Kovalam Beach is known for its lighthouse, golden sand and beautiful sunset views." },
+            { name: "Periyar Wildlife Sanctuary", img: "https://kaziranganationalparkassam.in/wp-content/uploads/2021/07/kerala-periyar-national-park-season.jpg", desc: "Periyar in Thekkady is known for elephants, deer and boat safaris on Periyar Lake." },
+            { name: "Athirappilly Waterfalls", img: "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/0b/4b/a2/1c/athirapally-falls-in.jpg?w=1200&h=-1&s=1", desc: "The largest waterfall in Kerala, often called the 'Niagara of India'." },
+            { name: "Wayanad Hills", img: "https://www.keralatourism.org/images/microsites/wayanad/waynadu-1024x768.jpg", desc: "A peaceful hill region famous for forests, waterfalls and nature tourism." }
+        ];
+
+        const cuisines = [
+            { name: "Appam", img: "https://upload.wikimedia.org/wikipedia/commons/c/c3/Appam_-_%E0%AE%85%E0%AE%AA%E0%AF%8D%E0%AE%AA%E0%AE%AE%E0%AF%8D.jpg" },
+            { name: "Kerala Sadya", img: "https://www.yummytummyaarthi.com/wp-content/uploads/2023/08/onam-sadhya-lunch-menu-2.jpeg" },
+            { name: "Puttu", img: "https://i0.wp.com/www.chitrasfoodbook.com/wp-content/uploads/2016/07/kerala-puttu-recipe-2.jpg?resize=500%2C517&ssl=1" },
+            { name: "Kerala Fish Curry", img: "https://allwaysdelicious.com/wp-content/uploads/2022/03/kerala-fish-curry-overhead.jpg" }
+        ];
+
+        const literature = [
+            { name: "Adhyatma Ramayanam", img: "https://m.media-amazon.com/images/I/71j9caEbnoL._AC_UF1000,1000_QL80_.jpg", info: "Written by Thunchaththu Ezhuthachan, the father of Malayalam language.", line: "ശ്രീരാമ ജയ രാമ ജയ ജയ രാമ" },
+            { name: "Kumarasambhavam", img: "https://m.media-amazon.com/images/I/61HEfyQ-5WL.jpg", info: "Written by Kumaran Asan, describing love, devotion and philosophy.", line: "ചിന്തിച്ചിടും മനുഷ്യജീവിതം സത്യത്തിന്റെ വഴിയിലേക്കു" },
+            { name: "Balyakalasakhi", img: "https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1728721414i/10413697.jpg", info: "A famous novel by Vaikom Muhammad Basheer about love and life.", line: "സ്നേഹം മനുഷ്യന്റെ ഏറ്റവും വലിയ ശക്തിയാണ്" }
+        ];
+
+        // Render Places
+        const placesGrid = document.getElementById('placesGrid');
+        places.forEach(p => {
+            const card = document.createElement('div');
+            card.className = 'placeCard';
+            card.onclick = () => openModal(p);
+            card.innerHTML = `<img src="${p.img}"><div class="overlay"><h3>${p.name}</h3></div>`;
+            placesGrid.appendChild(card);
+        });
+
+        // Render Cuisine
+        const cuisineGrid = document.getElementById('cuisineGrid');
+        cuisines.forEach(c => {
+            const card = document.createElement('div');
+            card.className = 'foodCard';
+            card.innerHTML = `<img src="${c.img}"><p>${c.name}</p>`;
+            cuisineGrid.appendChild(card);
+        });
+
+        // Render Literature
+        const litGrid = document.getElementById('litGrid');
+        literature.forEach(l => {
+            const card = document.createElement('div');
+            card.className = 'litCard';
+            card.innerHTML = `<img src="${l.img}"><h3>${l.name}</h3><p>${l.info}</p><p class="malayalamLine">${l.line}</p>`;
+            litGrid.appendChild(card);
+        });
+
+        // Modal Functions
+        function openModal(place) {
+            document.getElementById('modalImg').src = place.img;
+            document.getElementById('modalTitle').innerText = place.name;
+            document.getElementById('modalDesc').innerText = place.desc;
+            document.getElementById('placeModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('placeModal').style.display = 'none';
+        }
+
+        window.onclick = (e) => { if(e.target.id === 'placeModal') closeModal(); }
+    </script>
+</body>
+</html>

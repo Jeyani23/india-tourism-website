@@ -1,0 +1,50 @@
+:root {
+    --primary: #468966;
+    --secondary: #fff0a5;
+    --accent: #ffb03b;
+    --dark: #b64926;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: var(--secondary);
+}
+
+.hero {
+    background-image: 
+        linear-gradient(rgba(70,137,102,0.7), rgba(182,73,38,0.7)),
+        url("YOUR-IMAGE");
+}
+
+.infoCard {
+    background: white;
+    border-top: 5px solid var(--primary);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.sectionTitle {
+    color: var(--accent);
+}
+
+.placeCard:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+}
+
+.overlay {
+    background: rgba(182,73,38,0.8); /* dark red */
+}
+
+.foodCard {
+    border-bottom: 4px solid var(--accent);
+}
+
+.culture {
+    background: white;
+    border-left: 6px solid var(--primary);
+}
+
+.close {
+    color: var(--dark);
+}

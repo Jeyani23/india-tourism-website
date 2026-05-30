@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Explore Madhya Pradesh</title>
+
+<style>
+
+body{
+margin:0;
+font-family:Arial;
+background:#f4f4f4;
+}
+
+/* HERO */
+
+.hero{
+height:350px;
+background-image:linear-gradient(rgba(0,0,0,0.3),rgba(0,0,0,0.3)),
+url("https://upload.wikimedia.org/wikipedia/commons/4/4f/Khajuraho_Temple.jpg");
+background-size:cover;
+background-position:center;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+color:white;
+text-shadow:2px 2px 6px black;
+}
+
+.hero h1{font-size:50px}
+
+/* INFO */
+
+.infoCards{
+display:flex;
+justify-content:center;
+gap:20px;
+margin-top:-40px;
+}
+
+.infoCard{
+background:white;
+padding:20px;
+width:180px;
+text-align:center;
+border-radius:8px;
+box-shadow:0 4px 8px rgba(0,0,0,0.2);
+}
+
+/* TITLE */
+
+.sectionTitle{
+text-align:center;
+margin-top:50px;
+color:#FF9933;
+}
+
+/* GRID */
+
+.places{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:25px;
+padding:40px;
+}
+
+.placeCard{
+position:relative;
+cursor:pointer;
+overflow:hidden;
+border-radius:10px;
+transition:transform 0.3s,box-shadow 0.3s;
+}
+
+.placeCard:hover{
+transform:translateY(-10px);
+box-shadow:0 10px 20px rgba(0,0,0,0.3);
+}
+
+.placeCard img{
+width:100%;
+height:220px;
+object-fit:cover;
+transition:0.5s;
+}
+
+.placeCard:hover img{
+transform:scale(1.1);
+}
+
+.overlay{
+position:absolute;
+bottom:0;
+background:rgba(0,0,0,0.6);
+color:white;
+width:100%;
+text-align:center;
+padding:10px;
+}
+
+/* CUISINE */
+
+.cuisine{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:20px;
+padding:40px;
+}
+
+.foodCard{
+background:white;
+text-align:center;
+padding:10px;
+box-shadow:0 3px 6px rgba(0,0,0,0.2);
+}
+
+.foodCard img{
+width:100%;
+height:150px;
+object-fit:cover;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="hero">
+<h1>Explore Madhya Pradesh</h1>
+<p>The Heart of Incredible India</p>
+</div>
+
+<div class="infoCards">
+<div class="infoCard"><h3>Capital</h3><p>Bhopal</p></div>
+<div class="infoCard"><h3>Language</h3><p>Hindi</p></div>
+<div class="infoCard"><h3>Best Time</h3><p>Oct – March</p></div>
+<div class="infoCard"><h3>Cities</h3><p>Indore, Gwalior</p></div>
+</div>
+
+<h2 class="sectionTitle">Famous Tourist Places</h2>
+
+<div class="places">
+
+<div class="placeCard">
+<img src="https://upload.wikimedia.org/wikipedia/commons/4/4f/Khajuraho_Temple.jpg">
+<div class="overlay"><h3>Khajuraho Temples</h3></div>
+</div>
+
+<div class="placeCard">
+<img src="https://upload.wikimedia.org/wikipedia/commons/4/4e/Sanchi_Stupa.jpg">
+<div class="overlay"><h3>Sanchi Stupa</h3></div>
+</div>
+
+<div class="placeCard">
+<img src="https://upload.wikimedia.org/wikipedia/commons/0/0f/Gwalior_Fort.jpg">
+<div class="overlay"><h3>Gwalior Fort</h3></div>
+</div>
+
+<div class="placeCard">
+<img src="https://upload.wikimedia.org/wikipedia/commons/5/5a/Bhimbetka.jpg">
+<div class="overlay"><h3>Bhimbetka Caves</h3></div>
+</div>
+
+<div class="placeCard">
+<img src="https://upload.wikimedia.org/wikipedia/commons/7/7a/Kanha_Tiger.jpg">
+<div class="overlay"><h3>Kanha National Park</h3></div>
+</div>
+
+<div class="placeCard">
+<img src="https://upload.wikimedia.org/wikipedia/commons/3/3a/Mahakaleshwar.jpg">
+<div class="overlay"><h3>Mahakaleshwar Temple</h3></div>
+</div>
+
+</div>
+
+<h2 class="sectionTitle">Famous Cuisine</h2>
+
+<div class="cuisine">
+
+<div class="foodCard">
+<img src="https://upload.wikimedia.org/wikipedia/commons/4/4f/Poha.jpg">
+<p>Poha</p>
+</div>
+
+<div class="foodCard">
+<img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Jalebi.jpg">
+<p>Jalebi</p>
+</div>
+
+<div class="foodCard">
+<img src="https://upload.wikimedia.org/wikipedia/commons/4/4d/Bhutte_ka_Keess.jpg">
+<p>Bhutte Ka Kees</p>
+</div>
+
+<div class="foodCard">
+<img src="https://upload.wikimedia.org/wikipedia/commons/3/33/Dal_Bafla.jpg">
+<p>Dal Bafla</p>
+</div>
+
+</div>
+
+</body>
+</html>

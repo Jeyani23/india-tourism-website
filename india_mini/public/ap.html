@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explore Andhra Pradesh</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+        }
+
+        /* HERO SECTION */
+        .hero {
+            height: 350px;
+            background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url("https://upload.wikimedia.org/wikipedia/commons/4/4e/Tirumala_090615.jpg");
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            text-shadow: 2px 2px 6px black;
+        }
+
+        .hero h1 { font-size: 50px; margin: 0; }
+        .hero p { font-size: 20px; }
+
+        /* INFO CARDS */
+        .infoCards {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: -40px;
+        }
+
+        .infoCard {
+            background: white;
+            padding: 20px;
+            width: 180px;
+            text-align: center;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .sectionTitle {
+            text-align: center;
+            margin-top: 50px;
+            color: #FF9933;
+        }
+
+        /* PLACES GRID */
+        .places {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            padding: 40px;
+        }
+
+        .placeCard {
+            position: relative;
+            cursor: pointer;
+            overflow: hidden;
+            border-radius: 10px;
+        }
+
+        .placeCard img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            transition: 0.4s;
+        }
+
+        .placeCard:hover img { transform: scale(1.1); }
+
+        .overlay {
+            position: absolute;
+            bottom: 0;
+            background: rgba(0,0,0,0.6);
+            color: white;
+            width: 100%;
+            text-align: center;
+            padding: 10px;
+        }
+
+        /* MODAL POPUP */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modalContent {
+            background: white;
+            padding: 30px;
+            width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            border-radius: 8px;
+            text-align: center;
+            position: relative;
+        }
+
+        .modalContent img { width: 100%; height: 300px; object-fit: cover; border-radius: 5px; }
+
+        .close {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 35px;
+            cursor: pointer;
+            color: #333;
+        }
+
+        /* CUISINE SECTION */
+        .cuisine {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            padding: 40px;
+        }
+
+        .foodCard {
+            background: white;
+            text-align: center;
+            border-radius: 8px;
+            padding: 10px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+        }
+
+        .foodCard img { width: 100%; height: 150px; object-fit: cover; }
+
+        /* LITERATURE SECTION */
+        .literature {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            padding: 40px;
+        }
+
+        .litCard {
+            background: white;
+            padding: 15px;
+            border-left: 5px solid #138808;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+        }
+
+        .litCard img { width: 100%; height: 180px; object-fit: cover; }
+
+        .teluguLine {
+            color: #138808;
+            font-weight: bold;
+            margin-top: 10px;
+            font-size: 1.1em;
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .places, .literature, .cuisine { grid-template-columns: repeat(2, 1fr); }
+            .modalContent { width: 90%; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="hero">
+        <h1>Explore Andhra Pradesh</h1>
+        <p>The Land of Rich Culture and Spiritual Heritage</p>
+    </div>
+
+    <div class="infoCards">
+        <div class="infoCard"><h3>Capital</h3><p>Amaravati</p></div>
+        <div class="infoCard"><h3>Language</h3><p>Telugu</p></div>
+        <div class="infoCard"><h3>Best Time</h3><p>October – March</p></div>
+        <div class="infoCard"><h3>Major Cities</h3><p>Visakhapatnam, Vijayawada, Tirupati</p></div>
+    </div>
+
+    <h2 class="sectionTitle">Famous Tourist Places</h2>
+    <div class="places" id="placesGrid"></div>
+
+    <div class="modal" id="placeModal">
+        <div class="modalContent">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <img src="" id="modalImg" alt="">
+            <h2 id="modalTitle"></h2>
+            <p id="modalDesc" style="line-height: 1.6; text-align: justify;"></p>
+        </div>
+    </div>
+
+    <h2 class="sectionTitle">Andhra Cuisine</h2>
+    <div class="cuisine" id="cuisineGrid"></div>
+
+    <h2 class="sectionTitle">Telugu Literature</h2>
+    <div class="literature" id="litGrid"></div>
+
+    <script>
+        const places = [
+            { name: "Tirupati Balaji Temple", img: "https://upload.wikimedia.org/wikipedia/commons/4/4e/Tirumala_090615.jpg", desc: "Tirupati Balaji Temple, also known as Sri Venkateswara Temple, is located in Tirumala hills in Andhra Pradesh. It is one of the most visited pilgrimage sites in the world. The temple is dedicated to Lord Venkateswara, a form of Lord Vishnu. Millions of devotees visit this temple every year to seek blessings. The temple is famous for its spiritual importance, beautiful Dravidian architecture, and traditional rituals that have been followed for centuries." },
+            { name: "Araku Valley", img: "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/03/7b/31/15/araku-valley.jpg?w=1200&h=1200&s=1", desc: "Araku Valley is a beautiful hill station located in the Eastern Ghats near Visakhapatnam. It is famous for its coffee plantations, green valleys, waterfalls and tribal culture. The valley offers a peaceful environment and is a popular destination for nature lovers. Tourists also enjoy the scenic train journey from Visakhapatnam to Araku which passes through tunnels, mountains and forests." },
+            { name: "Borra Caves", img: "https://media.assettype.com/deccanherald%2Fimport%2Fsites%2Fdh%2Ffiles%2Farticle_images%2F2017%2F02%2F05%2F594849.jpg?w=undefined&auto=format%2Ccompress&fit=max", desc: "Borra Caves are one of the largest and oldest caves in India. They are located in the Ananthagiri hills of the Eastern Ghats. The caves are famous for their natural limestone formations such as stalactites and stalagmites that create unique shapes. These caves were discovered in 1807 and are an important geological and tourist attraction in Andhra Pradesh." },
+            { name: "Amaravati Stupa", img: "https://cdn1.tripoto.com/media/filter/nl/img/2380291/Image/1700228316_the_great_stupa_of_sanchi_madhya_pradesh_1024x683.jpg.webp", desc: "The Amaravati Stupa is an ancient Buddhist monument located near the Krishna River. It was built during the Satavahana dynasty and is an important historical site related to Buddhism in India. The site contains beautiful carvings and sculptures that depict the life of Buddha and Buddhist teachings." },
+            { name: "Visakhapatnam Beach", img: "https://upload.wikimedia.org/wikipedia/commons/4/44/Visakhapatnam_beach_road_from_Kailsagiri_hill.jpg", desc: "Visakhapatnam, also known as Vizag, is a major coastal city in Andhra Pradesh. The RK Beach is one of the most famous beaches in the city. Tourists visit this place to enjoy the sea view, sunrise, and pleasant climate. The city also has attractions like submarine museums, parks and scenic hills." },
+            { name: "Lambasingi Hills", img: "https://www.vizagarakutourpackages.com/wp-content/uploads/2024/01/Lambasingi-Mountains1.jpg", desc: "Lambasingi is a small hill station in Andhra Pradesh known as the 'Kashmir of Andhra Pradesh'. It is famous for its cool climate and foggy mornings. The region is surrounded by forests and coffee plantations, making it a peaceful destination for tourists." }
+        ];
+
+        const cuisines = [
+            { name: "Andhra Biryani", img: "https://nandhini.com/wp-content/uploads/2025/07/Andhra-Chicken-Biryani-1.webp" },
+            { name: "Pesarattu", img: "https://www.kannammacooks.com/wp-content/uploads/pesarattu.jpg" },
+            { name: "Pulihora", img: "https://www.indianhealthyrecipes.com/wp-content/uploads/2024/06/pulihora-recipe.jpg" },
+            { name: "Gongura Chicken", img: "https://www.licious.in/blog/wp-content/uploads/2022/12/Shutterstock_600874184-1-750x750.jpg" }
+        ];
+
+        const literature = [
+            { name: "Mahabharatam (Telugu)", img: "https://cdn.exoticindia.com/images/products/original/books-2017/nzm003.webp", info: "The Telugu Mahabharatam was translated by the famous poet Nannaya. It is one of the earliest and most important works of Telugu literature.", line: "ధర్మో రక్షతి రక్షితః" },
+            { name: "Amuktamalyada", img: "https://m.media-amazon.com/images/I/519refxC-sL._AC_UF1000,1000_QL80_.jpg", info: "Amuktamalyada is a famous Telugu poem written by the Vijayanagara emperor Sri Krishnadevaraya. It describes devotion and the story of Andal.", line: "దేశ భాషలందు తెలుగు లెస్స" },
+            { name: "Sumati Satakam", img: "https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1605790314i/55945623.jpg", info: "Sumati Satakam written by Baddena is a collection of moral poems in Telugu literature that teach good behavior and wisdom.", line: "అన్నదానం మహాదానం" }
+        ];
+
+        // Load Places
+        const placesGrid = document.getElementById('placesGrid');
+        places.forEach(p => {
+            const div = document.createElement('div');
+            div.className = 'placeCard';
+            div.onclick = () => openModal(p);
+            div.innerHTML = `<img src="${p.img}"><div class="overlay"><h3>${p.name}</h3></div>`;
+            placesGrid.appendChild(div);
+        });
+
+        // Load Cuisine
+        const cuisineGrid = document.getElementById('cuisineGrid');
+        cuisines.forEach(c => {
+            const div = document.createElement('div');
+            div.className = 'foodCard';
+            div.innerHTML = `<img src="${c.img}"><p>${c.name}</p>`;
+            cuisineGrid.appendChild(div);
+        });
+
+        // Load Literature
+        const litGrid = document.getElementById('litGrid');
+        literature.forEach(l => {
+            const div = document.createElement('div');
+            div.className = 'litCard';
+            div.innerHTML = `<img src="${l.img}"><h3>${l.name}</h3><p>${l.info}</p><p class="teluguLine">${l.line}</p>`;
+            litGrid.appendChild(div);
+        });
+
+        // Modal Controls
+        function openModal(place) {
+            document.getElementById('modalImg').src = place.img;
+            document.getElementById('modalTitle').innerText = place.name;
+            document.getElementById('modalDesc').innerText = place.desc;
+            document.getElementById('placeModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('placeModal').style.display = 'none';
+        }
+
+        window.onclick = (e) => { if(e.target.id === 'placeModal') closeModal(); }
+    </script>
+</body>
+</html>

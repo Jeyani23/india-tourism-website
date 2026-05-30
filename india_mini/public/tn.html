@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explore Tamil Nadu</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+        }
+
+        /* HERO SECTION */
+        .hero {
+            height: 350px;
+            background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url("https://upload.wikimedia.org/wikipedia/commons/5/55/Meenakshi_Temple_Madurai.jpg");
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            text-shadow: 2px 2px 6px black;
+        }
+
+        .hero h1 { font-size: 50px; margin: 0; }
+        .hero p { font-size: 20px; }
+
+        /* INFO CARDS */
+        .infoCards {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: -40px;
+        }
+
+        .infoCard {
+            background: white;
+            padding: 20px;
+            width: 180px;
+            text-align: center;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .sectionTitle {
+            text-align: center;
+            margin-top: 50px;
+            color: #FF9933;
+        }
+
+        /* PLACES GRID */
+        .places {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            padding: 40px;
+        }
+
+        .placeCard {
+            position: relative;
+            cursor: pointer;
+            overflow: hidden;
+            border-radius: 10px;
+        }
+
+        .placeCard img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            transition: 0.4s;
+        }
+
+        .placeCard:hover img { transform: scale(1.1); }
+
+        .overlay {
+            position: absolute;
+            bottom: 0;
+            background: rgba(0,0,0,0.6);
+            color: white;
+            width: 100%;
+            text-align: center;
+            padding: 10px;
+        }
+
+        /* MODAL (Hidden by default) */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: none; /* Changed from React state to CSS display */
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modalContent {
+            background: white;
+            padding: 30px;
+            width: 500px;
+            border-radius: 8px;
+            text-align: center;
+            position: relative;
+        }
+
+        .modalContent img { width: 100%; height: 250px; object-fit: cover; }
+
+        .close {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 30px;
+            cursor: pointer;
+            color: #333;
+        }
+
+        /* CUISINE */
+        .cuisine {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            padding: 40px;
+        }
+
+        .foodCard {
+            background: white;
+            text-align: center;
+            border-radius: 8px;
+            padding: 10px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+        }
+
+        .foodCard img { width: 100%; height: 150px; object-fit: cover; }
+
+        /* LITERATURE */
+        .literature {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            padding: 40px;
+        }
+
+        .litCard {
+            background: white;
+            padding: 15px;
+            border-left: 5px solid #138808;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+        }
+
+        .litCard img { width: 100%; height: 180px; object-fit: cover; }
+
+        .tamilLine {
+            color: #138808;
+            font-weight: bold;
+            margin-top: 10px;
+            white-space: pre-line; /* Keeps the line breaks in Tamil text */
+        }
+
+        .hero{
+height:350px;
+background-image:linear-gradient(rgba(0,0,0,0.3),rgba(0,0,0,0.3)),
+url("https://i0.wp.com/templesmap.com/wp-content/uploads/2025/10/tamil-nadu-temple-pilgrimage.jpg.jpg?fit=1200%2C628&ssl=1");
+background-size:cover;
+background-position:center;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+color:white;
+text-shadow:2px 2px 6px black;
+}
+
+        /* Responsive adjustments */
+        @media (max-width: 900px) {
+            .places, .literature { grid-template-columns: repeat(2, 1fr); }
+            .cuisine { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="hero">
+        <h1>Explore Tamil Nadu</h1>
+        <p>Land of Temples, Culture and Tradition</p>
+    </div>
+
+    <div class="infoCards">
+        <div class="infoCard"><h3>Capital</h3><p>Chennai</p></div>
+        <div class="infoCard"><h3>Languages</h3><p>Tamil, English</p></div>
+        <div class="infoCard"><h3>Best Time</h3><p>Oct – March</p></div>
+        <div class="infoCard"><h3>Major Cities</h3><p>Chennai, Madurai, Coimbatore</p></div>
+    </div>
+
+    <h2 class="sectionTitle">Famous Tourist Places</h2>
+    <div class="places" id="placesContainer">
+        </div>
+
+    <div class="modal" id="placeModal">
+        <div class="modalContent">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <img src="" id="modalImg" alt="">
+            <h2 id="modalTitle"></h2>
+            <p id="modalDesc"></p>
+        </div>
+    </div>
+
+    <h2 class="sectionTitle">Tamil Nadu Cuisine</h2>
+    <div class="cuisine" id="cuisineContainer"></div>
+
+    <h2 class="sectionTitle">Tamil Literature (இலக்கியம்)</h2>
+    <div class="literature" id="literatureContainer"></div>
+
+    <script>
+        // Data arrays kept identical to your React code
+        const places = [
+            { name: "Meenakshi Amman Temple", img: "https://www.ghumney.com/uploads/0000/19/2024/12/17/meenakshi-temple-madurai-3.jpg", desc: "Meenakshi Amman Temple in Madurai is one of the most important temples in Tamil Nadu. The temple is dedicated to Goddess Meenakshi and Lord Shiva and is famous for its colorful towers called gopurams." },
+            { name: "Brihadeeswarar Temple", img: "https://ramyashotels.com/wp-content/uploads/2021/06/Thanjavur-temple-Ramyas-Hotels-Trichy.jpg", desc: "Brihadeeswarar Temple in Thanjavur was built by Raja Raja Chola I. It is a UNESCO World Heritage Site and one of the greatest examples of Chola architecture." },
+            { name: "Shore Temple", img: "https://upload.wikimedia.org/wikipedia/commons/7/74/Shore_Temple_-Mamallapuram_-Tamil_Nadu_-N-TN-C55.jpg", desc: "The Shore Temple is located in Mahabalipuram and was built by the Pallava dynasty. It is famous for its sea-side location and historical sculptures." },
+            { name: "Rameswaram Temple", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/Ramanathaswamy_temple7.JPG/250px-Ramanathaswamy_temple7.JPG", desc: "Ramanathaswamy Temple in Rameswaram is a famous pilgrimage temple dedicated to Lord Shiva. It has the longest temple corridor in the world." },
+            { name: "Ooty Hills", img: "https://visitplacesindia.com/wp-content/uploads/2025/01/ooty-lake.jpg", desc: "Ooty is a hill station located in the Nilgiri Hills. It is known for tea gardens, cool weather, and beautiful landscapes." },
+            { name: "Kodaikanal", img: "https://dq1q7qkthxkc0.cloudfront.net/StaticMedia/20c16b15-5bde-4430-83a8-2388dea7f17b.jpg", desc: "Kodaikanal is a popular hill station in Tamil Nadu known for forests, waterfalls and its scenic lake." }
+        ];
+
+        const cuisines = [
+            { name: "Idli", img: "https://media.istockphoto.com/id/1620129740/photo/selective-focus-of-south-indian-famous-food-idli-vada-with-sambar-and-chatney.jpg?s=612x612&w=0&k=20&c=sUepsZL9VXtY-J46o8pX0B06tXm-cgGGS-N5JIlaKUY=" },
+            { name: "Dosa", img: "https://images.jdmagicbox.com/v2/comp/chennai/e1/044pxx44.xx44.211113073633.e3e1/catalogue/trupathi-tiffin-center-ayanavaram-chennai-tiffin-services-cswjrz4t7n.jpg" },
+            { name: "Pongal", img: "https://www.shutterstock.com/image-photo/ven-pongal-coconut-chutney-sambar-260nw-1600122280.jpg" },
+            { name: "Chettinad Chicken", img: "https://www.whiskaffair.com/wp-content/uploads/2020/09/Chicken-Chettinad-Curry-2-3.jpg" }
+        ];
+
+        const literature = [
+            { name: "Thirukkural", img: "https://m.media-amazon.com/images/I/71c+EBr4k0L.jpg", info: "Thirukkural written by Thiruvalluvar contains 1330 couplets that teach ethics and good living.", line: "அகர முதல எழுத்தெல்லாம் ஆதி\nபகவன் முதற்றே உலகு" },
+            { name: "Silappathikaram", img: "https://giri.in/cdn/shop/products/91498310-1_silapathikaram_puliyur_kesikan_85c6a479-666e-4907-bd53-4ac1fdcc9020_600x600.jpg?v=1707290690", info: "Silappathikaram is one of the five great Tamil epics that tells the story of Kannagi and justice.", line: "கண்ணகி நெஞ்சின் நேர்மை நாட்டை காத்தது" },
+            { name: "Purananuru", img: "https://m.media-amazon.com/images/I/615zYW4k7LL._UF1000,1000_QL80_.jpg", info: "Purananuru is a collection of Sangam poems describing kings, wars and Tamil society.", line: "யாதும் ஊரே யாவரும் கேளிர்" }
+        ];
+
+        // Load Places
+        const placesContainer = document.getElementById('placesContainer');
+        places.forEach(place => {
+            const div = document.createElement('div');
+            div.className = 'placeCard';
+            div.onclick = () => openModal(place);
+            div.innerHTML = `<img src="${place.img}" alt="${place.name}"><div class="overlay"><h3>${place.name}</h3></div>`;
+            placesContainer.appendChild(div);
+        });
+
+        // Load Cuisine
+        const cuisineContainer = document.getElementById('cuisineContainer');
+        cuisines.forEach(food => {
+            const div = document.createElement('div');
+            div.className = 'foodCard';
+            div.innerHTML = `<img src="${food.img}" alt=""><p>${food.name}</p>`;
+            cuisineContainer.appendChild(div);
+        });
+
+        // Load Literature
+        const literatureContainer = document.getElementById('literatureContainer');
+        literature.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'litCard';
+            div.innerHTML = `
+                <img src="${item.img}" alt="">
+                <h3>${item.name}</h3>
+                <p>${item.info}</p>
+                <p class="tamilLine">${item.line}</p>
+            `;
+            literatureContainer.appendChild(div);
+        });
+
+        // Modal Logic
+        function openModal(place) {
+            document.getElementById('modalImg').src = place.img;
+            document.getElementById('modalTitle').innerText = place.name;
+            document.getElementById('modalDesc').innerText = place.desc;
+            document.getElementById('placeModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('placeModal').style.display = 'none';
+        }
+
+        // Close modal when clicking outside content
+        window.onclick = function(event) {
+            const modal = document.getElementById('placeModal');
+            if (event.target == modal) closeModal();
+        }
+    </script>
+</body>
+</html>

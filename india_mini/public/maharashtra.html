@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Explore Maharashtra</title>
+
+<style>
+
+body{
+margin:0;
+font-family:Arial;
+background:#f4f4f4;
+}
+
+.hero{
+height:540px;
+background-image:linear-gradient(rgba(0,0,0,0.3),rgba(0,0,0,0.3)),url("https://saishishirtours.in/wp-content/uploads/2023/02/shirdi-package-600x540.webp");
+background-size:cover;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+color:white;
+}
+
+.hero h1{font-size:50px}
+
+.infoCards{
+display:flex;
+justify-content:center;
+gap:20px;
+margin-top:-40px;
+}
+
+.infoCard{
+background:white;
+padding:20px;
+width:180px;
+text-align:center;
+border-radius:8px;
+box-shadow:0 4px 8px rgba(0,0,0,0.2);
+}
+
+.sectionTitle{
+text-align:center;
+margin-top:50px;
+color:#FF9933;
+}
+
+.places{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:25px;
+padding:40px;
+}
+
+.placeCard{
+position:relative;
+cursor:pointer;
+overflow:hidden;
+border-radius:10px;
+}
+
+.placeCard img{
+width:100%;
+height:220px;
+object-fit:cover;
+transition:0.4s;
+}
+
+.placeCard:hover img{transform:scale(1.1)}
+
+.overlay{
+position:absolute;
+bottom:0;
+background:rgba(0,0,0,0.6);
+color:white;
+width:100%;
+text-align:center;
+}
+
+.modal{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.7);
+display:none;
+justify-content:center;
+align-items:center;
+}
+
+.modalContent{
+background:white;
+padding:30px;
+width:500px;
+border-radius:8px;
+}
+
+.modalContent img{
+width:100%;
+height:250px;
+object-fit:cover;
+}
+
+.close{
+float:right;
+font-size:28px;
+cursor:pointer;
+}
+
+.cuisine{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:20px;
+padding:40px;
+}
+
+.foodCard{
+background:white;
+text-align:center;
+padding:10px;
+box-shadow:0 3px 6px rgba(0,0,0,0.2);
+}
+
+.foodCard img{
+width:100%;
+height:150px;
+object-fit:cover;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="hero">
+<h1>Explore Maharashtra</h1>
+<p>Land of Forts and Maratha Heritage</p>
+</div>
+
+<div class="infoCards">
+<div class="infoCard"><h3>Capital</h3><p>Mumbai</p></div>
+<div class="infoCard"><h3>Language</h3><p>Marathi</p></div>
+<div class="infoCard"><h3>Best Time</h3><p>Oct – Feb</p></div>
+<div class="infoCard"><h3>Cities</h3><p>Mumbai, Pune</p></div>
+</div>
+
+<h2 class="sectionTitle">Famous Tourist Places</h2>
+
+<div class="places">
+
+<div class="placeCard" onclick="openModal('Gateway of India','Historic monument in Mumbai built during British rule.','https://s7ap1.scene7.com/is/image/incredibleindia/gateway-of-india-mumbai-maharashtra-2-attr-hero?qlt=82&ts=1742162842869')">
+<img src="https://s7ap1.scene7.com/is/image/incredibleindia/gateway-of-india-mumbai-maharashtra-2-attr-hero?qlt=82&ts=1742162842869">
+<div class="overlay"><h3>Gateway of India</h3></div>
+</div>
+
+<div class="placeCard" onclick="openModal('Ajanta Caves','Ancient Buddhist cave temples with paintings and sculptures.','https://breathedreamgo.com/wp-content/uploads/2010/03/India-for-Beginners-custom-tours-5.jpg')">
+<img src="https://breathedreamgo.com/wp-content/uploads/2010/03/India-for-Beginners-custom-tours-5.jpg">
+<div class="overlay"><h3>Ajanta Caves</h3></div>
+</div>
+
+<div class="placeCard" onclick="openModal('Ellora Caves','UNESCO site with Hindu, Buddhist and Jain temples.','https://www.worldhistory.org/img/c/p/1600x900/4565.jpg')">
+<img src="https://www.worldhistory.org/img/c/p/1600x900/4565.jpg">
+<div class="overlay"><h3>Ellora Caves</h3></div>
+</div>
+
+<div class="placeCard" onclick="openModal('Shivneri Fort','Birthplace of Chhatrapati Shivaji Maharaj.','https://avathioutdoors.gumlet.io/travelGuide/dev/pune_P5778.jpg')">
+<img src="https://avathioutdoors.gumlet.io/travelGuide/dev/pune_P5778.jpg">
+<div class="overlay"><h3>Shivneri Fort</h3></div>
+</div>
+
+<div class="placeCard" onclick="openModal('Shirdi','Famous pilgrimage center of Sai Baba.','https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRo36cfv2-SeguozaxYXKeW6b8io3DFR62-hw&s')">
+<img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRo36cfv2-SeguozaxYXKeW6b8io3DFR62-hw&s">
+<div class="overlay"><h3>Shirdi</h3></div>
+</div>
+
+<div class="placeCard" onclick="openModal('Lonavala','Popular hill station known for scenic valleys.','https://imgcld.yatra.com/ytimages/image/upload/v1517482223/AdvNation/ANN_DES77/ann_top_Lonavala_9WKlm3.jpg')">
+<img src="https://imgcld.yatra.com/ytimages/image/upload/v1517482223/AdvNation/ANN_DES77/ann_top_Lonavala_9WKlm3.jpg">
+<div class="overlay"><h3>Lonavala</h3></div>
+</div>
+
+</div>
+
+<h2 class="sectionTitle">Famous Cuisine</h2>
+
+<div class="cuisine">
+
+<div class="foodCard">
+<img src="https://instamart-media-assets.swiggy.com/swiggy/image/upload/fl_lossy,f_auto,q_auto,h_960,w_960//InstamartAssets/Receipes/schezwan_vada_pav.webp">
+<p>Vada Pav</p>
+</div>
+
+<div class="foodCard">
+<img src="https://upload.wikimedia.org/wikipedia/commons/4/4a/Bambayya_Pav_bhaji.jpg">
+<p>Pav Bhaji</p>
+</div>
+
+<div class="foodCard">
+<img src="https://static.toiimg.com/thumb/55045560.cms?width=1200&height=900">
+<p>Puran Poli</p>
+</div>
+
+<div class="foodCard">
+<img src="https://myfoodstory.com/wp-content/uploads/2022/01/Misal-Pav-1.jpg">
+<p>Misal Pav</p>
+</div>
+
+</div>
+
+<div class="modal" id="modal">
+<div class="modalContent">
+<span class="close" onclick="closeModal()">&times;</span>
+<img id="modalImg">
+<h2 id="modalTitle"></h2>
+<p id="modalDesc"></p>
+</div>
+</div>
+
+<script>
+
+function openModal(title,desc,img){
+document.getElementById("modal").style.display="flex"
+document.getElementById("modalTitle").innerText=title
+document.getElementById("modalDesc").innerText=desc
+document.getElementById("modalImg").src=img
+}
+
+function closeModal(){
+document.getElementById("modal").style.display="none"
+}
+
+</script>
+
+</body>
+</html>

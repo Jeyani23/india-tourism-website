@@ -1,0 +1,129 @@
+.ai-container {
+  text-align: center;
+  padding: 40px;
+  color: rgb(13, 10, 10);
+}
+
+.preview {
+  width: 300px;
+  margin-top: 20px;
+  border-radius: 10px;
+}
+
+button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  background: #ff9800;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.loading {
+  margin-top: 20px;
+}
+
+.result {
+  margin-top: 20px;
+  font-size: 18px;
+}
+
+/* Floating Button */
+.floating-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #ff4081;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  font-size: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+.floating-btn:hover {
+  transform: scale(1.1);
+}
+
+.ai-page {
+  min-height: 100vh;
+  padding: 20px;
+  background: linear-gradient(135deg, #fff7e6, #fdf2f8);
+  font-family: "Segoe UI", sans-serif;
+}
+
+/* HEADER */
+.header-card {
+  text-align: center;
+  padding: 20px;
+  background: linear-gradient(90deg, #8b0000, #b22222);
+  color: white;
+  border-radius: 15px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.header-card h1 {
+  margin: 0;
+  font-size: 28px;
+}
+
+/* MAIN CARD */
+.main-card {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: center;
+}
+
+/* UPLOAD CARD */
+.upload-card {
+  background: white;
+  padding: 20px;
+  width: 90%;
+  max-width: 500px;
+  border-radius: 15px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+  text-align: center;
+  border: 2px solid #f4c430; /* golden touch */
+}
+
+.preview-img {
+  width: 100%;
+  max-height: 300px;
+  margin-top: 15px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+/* BUTTON */
+.detect-btn {
+  margin-top: 15px;
+  padding: 10px 20px;
+  background: linear-gradient(90deg, #ff9933, #ff5722);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.detect-btn:hover {
+  transform: scale(1.05);
+}
+
+/* RESULT CARD */
+.result-card {
+  background: #fff8e1;
+  padding: 20px;
+  width: 90%;
+  max-width: 600px;
+  border-radius: 15px;
+  border-left: 6px solid #ff9800;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}

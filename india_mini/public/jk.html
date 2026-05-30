@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Explore Jammu & Kashmir</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f4f4f4;
+}
+
+/* HERO */
+.hero {
+    height: 350px;
+    background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)),
+    url("https://upload.wikimedia.org/wikipedia/commons/1/1e/Dal_Lake_Houseboats.jpg");
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    text-shadow: 2px 2px 6px black;
+}
+
+.hero h1 { font-size: 50px; margin: 0; }
+.hero p { font-size: 20px; }
+
+/* INFO CARDS */
+.infoCards {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: -40px;
+}
+
+.infoCard {
+    background: white;
+    padding: 20px;
+    width: 200px;
+    text-align: center;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+/* SECTION TITLE */
+.sectionTitle {
+    text-align: center;
+    margin-top: 50px;
+    color: #FF9933;
+}
+
+/* PLACES */
+.places {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px;
+    padding: 40px;
+}
+
+.placeCard {
+    position: relative;
+    cursor: pointer;
+    overflow: hidden;
+    border-radius: 10px;
+}
+
+.placeCard img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    transition: 0.4s;
+}
+
+.placeCard:hover img {
+    transform: scale(1.1);
+}
+
+.overlay {
+    position: absolute;
+    bottom: 0;
+    background: rgba(0,0,0,0.6);
+    color: white;
+    width: 100%;
+    text-align: center;
+    padding: 10px;
+}
+
+/* MODAL */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.7);
+    display: none;
+    justify-content: center;
+    align-items: center;
+}
+
+.modalContent {
+    background: white;
+    padding: 30px;
+    width: 500px;
+    border-radius: 8px;
+    text-align: center;
+    position: relative;
+}
+
+.modalContent img {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+}
+
+.close {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    font-size: 30px;
+    cursor: pointer;
+}
+
+/* CUISINE */
+.cuisine {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    padding: 40px;
+}
+
+.foodCard {
+    background: white;
+    text-align: center;
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+}
+
+.foodCard img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+}
+
+/* CULTURE */
+.culture {
+    padding: 40px;
+    text-align: center;
+    background: white;
+    margin: 20px;
+    border-radius: 10px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="hero">
+    <h1>Explore Jammu & Kashmir</h1>
+    <p>Paradise on Earth</p>
+</div>
+
+<div class="infoCards">
+    <div class="infoCard"><h3>Capital</h3><p>Srinagar (Summer), Jammu (Winter)</p></div>
+    <div class="infoCard"><h3>Languages</h3><p>Kashmiri, Dogri, Urdu, Hindi</p></div>
+    <div class="infoCard"><h3>Best Time</h3><p>March – October</p></div>
+    <div class="infoCard"><h3>Major Cities</h3><p>Srinagar, Jammu, Anantnag</p></div>
+</div>
+
+<h2 class="sectionTitle">Famous Tourist Places</h2>
+
+<div class="places">
+
+<div class="placeCard" onclick="openModal('Dal Lake','Dal Lake in Srinagar is famous for its houseboats and shikara rides. It offers breathtaking scenic beauty surrounded by mountains.','https://upload.wikimedia.org/wikipedia/commons/1/1e/Dal_Lake_Houseboats.jpg')">
+<img src="https://upload.wikimedia.org/wikipedia/commons/1/1e/Dal_Lake_Houseboats.jpg">
+<div class="overlay"><h3>Dal Lake</h3></div>
+</div>
+
+<div class="placeCard" onclick="openModal('Gulmarg','Gulmarg is a popular hill station known for snow activities like skiing and one of the highest cable cars in the world.','https://upload.wikimedia.org/wikipedia/commons/7/7e/Gulmarg.jpg')">
+<img src="https://upload.wikimedia.org/wikipedia/commons/7/7e/Gulmarg.jpg">
+<div class="overlay"><h3>Gulmarg</h3></div>
+</div>
+
+<div class="placeCard" onclick="openModal('Pahalgam','Pahalgam is a scenic valley known for rivers, forests and trekking. It is also a starting point for Amarnath Yatra.','https://upload.wikimedia.org/wikipedia/commons/3/3b/Pahalgam_Valley.jpg')">
+<img src="https://upload.wikimedia.org/wikipedia/commons/3/3b/Pahalgam_Valley.jpg">
+<div class="overlay"><h3>Pahalgam</h3></div>
+</div>
+
+<div class="placeCard" onclick="openModal('Sonmarg','Sonmarg means Meadow of Gold. It is famous for glaciers and snow-covered mountains.','https://upload.wikimedia.org/wikipedia/commons/0/0f/Sonmarg.jpg')">
+<img src="https://upload.wikimedia.org/wikipedia/commons/0/0f/Sonmarg.jpg">
+<div class="overlay"><h3>Sonmarg</h3></div>
+</div>
+
+<div class="placeCard" onclick="openModal('Amarnath Cave','Amarnath Cave is a sacred Hindu pilgrimage site dedicated to Lord Shiva.','https://upload.wikimedia.org/wikipedia/commons/8/8b/Amarnath_Temple.jpg')">
+<img src="https://upload.wikimedia.org/wikipedia/commons/8/8b/Amarnath_Temple.jpg">
+<div class="overlay"><h3>Amarnath</h3></div>
+</div>
+
+<div class="placeCard" onclick="openModal('Vaishno Devi','Vaishno Devi Temple in Jammu is one of the most visited pilgrimage sites in India.','https://upload.wikimedia.org/wikipedia/commons/4/4e/Vaishno_Devi_Temple.jpg')">
+<img src="https://upload.wikimedia.org/wikipedia/commons/4/4e/Vaishno_Devi_Temple.jpg">
+<div class="overlay"><h3>Vaishno Devi</h3></div>
+</div>
+
+</div>
+
+<h2 class="sectionTitle">Famous Cuisine</h2>
+
+<div class="cuisine">
+<div class="foodCard"><img src="https://upload.wikimedia.org/wikipedia/commons/7/71/Rogan_josh.jpg"><p>Rogan Josh</p></div>
+<div class="foodCard"><img src="https://upload.wikimedia.org/wikipedia/commons/3/3f/Yakhni.jpg"><p>Yakhni</p></div>
+<div class="foodCard"><img src="https://upload.wikimedia.org/wikipedia/commons/4/4e/Kahwa.jpg"><p>Kahwa Tea</p></div>
+<div class="foodCard"><img src="https://upload.wikimedia.org/wikipedia/commons/2/2e/Dum_aloo.jpg"><p>Dum Aloo</p></div>
+</div>
+
+<h2 class="sectionTitle">Culture of Jammu & Kashmir</h2>
+
+<div class="culture">
+<p>
+Jammu & Kashmir has a rich cultural heritage influenced by Hindu, Buddhist and Islamic traditions.
+Traditional Kashmiri dress includes Pheran for both men and women.
+Music, handicrafts like Pashmina shawls and carpet weaving are very famous.
+Festivals like Eid, Lohri and Baisakhi are celebrated with great joy.
+The region is also known for its hospitality and peaceful lifestyle.
+</p>
+</div>
+
+<!-- MODAL -->
+<div class="modal" id="modal">
+<div class="modalContent">
+<span class="close" onclick="closeModal()">&times;</span>
+<img id="modalImg">
+<h2 id="modalTitle"></h2>
+<p id="modalDesc"></p>
+</div>
+</div>
+
+<script>
+
+function openModal(title, desc, img) {
+    document.getElementById("modal").style.display = "flex";
+    document.getElementById("modalTitle").innerText = title;
+    document.getElementById("modalDesc").innerText = desc;
+    document.getElementById("modalImg").src = img;
+}
+
+function closeModal() {
+    document.getElementById("modal").style.display = "none";
+}
+
+window.onclick = function(e) {
+    if (e.target == document.getElementById("modal")) {
+        closeModal();
+    }
+}
+
+</script>
+
+</body>
+</html>

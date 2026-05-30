@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Digital India VR Tourism</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Crimson+Pro:ital,wght@0,300;0,400;1,300&display=swap');
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#020210;overflow:hidden;font-family:'Crimson Pro',Georgia,serif;color:#e0d8f0}
+  canvas{display:block}
+
+  #control-bar{
+    position:fixed;bottom:70px;left:50%;transform:translateX(-50%);
+    display:flex;gap:12px;align-items:center;z-index:80;
+    background:rgba(2,2,16,0.88);border:1px solid rgba(240,192,96,0.3);
+    border-radius:40px;padding:8px 22px;backdrop-filter:blur(12px);
+  }
+  #tour-btn{
+    display:flex;align-items:center;gap:8px;
+    background:linear-gradient(135deg,#f0c060,#d09030);
+    border:none;color:#000;border-radius:30px;padding:9px 22px;cursor:pointer;
+    font-family:'Cinzel',serif;font-size:13px;font-weight:700;letter-spacing:1.5px;
+    transition:all 0.25s;box-shadow:0 0 20px rgba(240,192,96,0.4);
+  }
+  #tour-btn:hover{transform:scale(1.05);box-shadow:0 0 30px rgba(240,192,96,0.6)}
+  #tour-btn.running{background:linear-gradient(135deg,#f04060,#c02040);box-shadow:0 0 20px rgba(240,64,96,0.5)}
+  #tour-btn .btn-icon{font-size:15px}
+  #speed-label{font-size:10px;color:#555;letter-spacing:2px;font-family:'Cinzel',serif}
+  #speed-slider{-webkit-appearance:none;width:80px;height:3px;background:rgba(240,192,96,0.3);border-radius:2px;outline:none;cursor:pointer}
+  #speed-slider::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;border-radius:50%;background:#f0c060;cursor:pointer}
+
+  #voice-bar{
+    position:fixed;top:75px;left:50%;transform:translateX(-50%);
+    background:rgba(2,2,16,0.92);border:1px solid rgba(240,192,96,0.35);
+    border-radius:30px;padding:8px 20px;
+    display:flex;align-items:center;gap:10px;
+    z-index:80;opacity:0;transition:opacity 0.4s;pointer-events:none;
+    backdrop-filter:blur(10px);
+  }
+  #voice-bar.show{opacity:1;pointer-events:all}
+  #voice-waves{display:flex;gap:3px;align-items:center;height:20px}
+  #voice-waves span{display:block;width:3px;background:#f0c060;border-radius:2px;animation:wave 0.8s ease-in-out infinite}
+  #voice-waves span:nth-child(1){height:6px;animation-delay:0s}
+  #voice-waves span:nth-child(2){height:14px;animation-delay:0.1s}
+  #voice-waves span:nth-child(3){height:10px;animation-delay:0.2s}
+  #voice-waves span:nth-child(4){height:18px;animation-delay:0.15s}
+  #voice-waves span:nth-child(5){height:8px;animation-delay:0.05s}
+  @keyframes wave{0%,100%{transform:scaleY(0.4)}50%{transform:scaleY(1)}}
+  #voice-text{font-size:11px;color:#f0c060;letter-spacing:1.5px;font-family:'Cinzel',serif}
+  #voice-stop-btn{background:none;border:1px solid rgba(240,64,64,0.5);color:#f06060;border-radius:20px;padding:3px 12px;cursor:pointer;font-size:11px;font-family:'Cinzel',serif}
+
+  #hud-top{
+    position:fixed;top:0;left:0;right:0;
+    background:linear-gradient(180deg,rgba(0,0,8,0.95) 0%,transparent 100%);
+    padding:1rem 1.5rem;display:flex;align-items:center;justify-content:space-between;
+    pointer-events:none;z-index:50;transition:right 0.4s ease;
+  }
+  #hud-title{font-size:20px;font-weight:700;color:#f0c060;letter-spacing:3px;font-family:'Cinzel',serif}
+  #hud-sub{font-size:9px;color:#555;letter-spacing:4px;margin-top:3px;font-family:'Cinzel',serif}
+  #hud-hint{font-size:11px;color:#555;letter-spacing:1px;pointer-events:auto}
+
+  #bottom-strip{
+    position:fixed;bottom:0;left:0;right:0;
+    background:linear-gradient(0deg,rgba(0,0,8,0.97) 0%,transparent 100%);
+    padding:0.4rem 1rem 0.7rem;display:flex;gap:6px;overflow-x:auto;z-index:50;
+    transition:right 0.4s ease;
+  }
+  #bottom-strip::-webkit-scrollbar{height:3px}
+  #bottom-strip::-webkit-scrollbar-thumb{background:#f0c06044;border-radius:2px}
+  .strip-btn{
+    background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);
+    color:#aaa;border-radius:20px;padding:5px 14px;cursor:pointer;
+    font-size:11px;white-space:nowrap;font-family:'Cinzel',serif;letter-spacing:0.5px;transition:all 0.2s;
+  }
+  .strip-btn:hover{background:rgba(255,255,255,0.12);color:#fff}
+  .strip-btn.active{font-weight:700;color:#000}
+
+  #info-panel{
+    position:fixed;top:0;right:-440px;bottom:0;width:420px;
+    background:linear-gradient(180deg,#04040f 0%,#06061a 100%);
+    border-left:1px solid rgba(240,192,96,0.15);
+    overflow-y:auto;z-index:100;transition:right 0.4s cubic-bezier(0.22,1,0.36,1);
+    display:flex;flex-direction:column;
+  }
+  #info-panel.open{right:0}
+  #panel-close{background:none;border:none;color:#555;cursor:pointer;font-size:18px;float:right;margin-top:-4px;transition:color 0.2s}
+  #panel-close:hover{color:#f0c060}
+  #panel-header{padding:1.5rem;border-bottom:1px solid rgba(255,255,255,0.05)}
+  #panel-eyebrow{font-size:9px;letter-spacing:3px;color:#f0c060;margin-bottom:6px;font-family:'Cinzel',serif}
+  #panel-name{font-size:26px;font-weight:700;color:#fff;line-height:1.2;margin-bottom:4px;font-family:'Cinzel',serif}
+  #panel-style{font-size:13px;color:#555}
+  #panel-voice-btn{
+    margin:0.8rem 1.5rem 0;padding:10px 16px;border-radius:10px;cursor:pointer;
+    display:flex;align-items:center;gap:10px;width:calc(100% - 3rem);
+    border:1px solid rgba(240,192,96,0.3);background:rgba(240,192,96,0.08);
+    color:#f0c060;font-family:'Cinzel',serif;font-size:12px;letter-spacing:1px;transition:all 0.2s;
+  }
+  #panel-voice-btn:hover{background:rgba(240,192,96,0.15)}
+  #panel-voice-btn.speaking{background:rgba(240,64,96,0.12);border-color:rgba(240,64,96,0.4);color:#f06080}
+  .panel-tabs{display:flex;border-bottom:1px solid rgba(255,255,255,0.05);margin-top:0.5rem}
+  .tab-btn{flex:1;padding:0.8rem;background:none;border:none;border-bottom:2px solid transparent;color:#444;cursor:pointer;font-size:12px;font-weight:500;font-family:'Cinzel',serif;letter-spacing:1px;transition:all 0.2s}
+  .tab-btn.active{color:#f0c060;border-bottom-color:#f0c060}
+  .tab-content{display:none;padding:1.25rem 1.5rem;line-height:1.95;font-size:14px;color:#9090b0}
+  .tab-content.active{display:block}
+  #facts-section{padding:0 1.5rem 1rem}
+  #facts-eyebrow{font-size:9px;letter-spacing:3px;color:#f0c060;margin-bottom:10px;font-family:'Cinzel',serif}
+  .fact-item{display:flex;gap:8px;margin-bottom:8px;font-size:13px;color:#7070a0;line-height:1.6}
+  .fact-dot{flex-shrink:0;margin-top:2px}
+  #song-box{margin:0 1.5rem 1rem;background:#0a0a1e;border-radius:10px;padding:0.75rem 1rem;display:flex;align-items:center;gap:10px}
+  #song-note{font-size:22px}
+  #song-label{font-size:9px;letter-spacing:2px;color:#f0c060;font-family:'Cinzel',serif}
+  #song-name{font-size:12px;color:#555;margin-top:2px}
+  #ai-guide-btn{
+    margin:0 1.5rem 1.5rem;width:calc(100% - 3rem);
+    border-radius:10px;padding:0.9rem;cursor:pointer;
+    font-size:13px;font-weight:600;letter-spacing:1.5px;font-family:'Cinzel',serif;
+    background:linear-gradient(135deg,rgba(240,192,96,0.12),rgba(240,192,96,0.05));
+    border:1px solid rgba(240,192,96,0.25);color:#f0c060;transition:all 0.2s;
+  }
+  #ai-guide-btn:hover{background:linear-gradient(135deg,rgba(240,192,96,0.22),rgba(240,192,96,0.1))}
+
+  #ai-modal{
+    position:fixed;inset:0;background:rgba(0,0,8,0.88);
+    backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;
+    z-index:200;opacity:0;pointer-events:none;transition:opacity 0.3s;
+  }
+  #ai-modal.open{opacity:1;pointer-events:all}
+  #ai-box{background:#060614;border-radius:16px;padding:2rem;max-width:520px;width:92%;box-shadow:0 0 80px rgba(240,192,96,0.1);border:1px solid rgba(240,192,96,0.15)}
+  #ai-modal-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.25rem}
+  #ai-badge{font-size:9px;letter-spacing:3px;color:#f0c060;margin-bottom:4px;font-family:'Cinzel',serif}
+  #ai-monument-name{font-size:20px;font-weight:700;color:#fff;font-family:'Cinzel',serif}
+  #ai-close-btn{background:none;border:1px solid #1a1a2a;color:#666;border-radius:8px;padding:4px 12px;cursor:pointer;font-size:12px;font-family:'Cinzel',serif}
+  .ai-q-btn{display:block;width:100%;text-align:left;background:#0c0c1e;border:1px solid rgba(240,192,96,0.15);color:#9090b8;border-radius:10px;padding:10px 14px;cursor:pointer;font-size:13px;margin-bottom:8px;font-family:'Crimson Pro',serif;transition:all 0.2s}
+  .ai-q-btn:hover{border-color:rgba(240,192,96,0.4);color:#fff}
+  #ai-answer{background:#0c0c1e;border:1px solid rgba(240,192,96,0.15);border-radius:10px;padding:1rem;font-size:14px;line-height:1.85;color:#c0b8d8;margin-top:10px;display:none}
+  #ai-loading{text-align:center;padding:1rem;color:#f0c060;font-size:13px;display:none;font-family:'Cinzel',serif;letter-spacing:1px}
+
+  #welcome{
+    position:fixed;inset:0;z-index:300;background:rgba(2,2,16,0.98);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;
+    animation:wFade 4.5s ease 1.5s forwards;
+  }
+  @keyframes wFade{0%{opacity:1;pointer-events:all}80%{opacity:1}100%{opacity:0;pointer-events:none}}
+  #welcome-eye{font-size:10px;letter-spacing:6px;color:#f0c060;font-family:'Cinzel',serif}
+  #welcome-h1{font-size:clamp(28px,5vw,52px);font-weight:900;color:#fff;text-align:center;line-height:1.15;font-family:'Cinzel',serif}
+  #welcome-h1 span{color:#f0c060}
+  #welcome-sub{font-size:14px;color:#555;margin-top:6px;letter-spacing:2px;font-family:'Cinzel',serif}
+  .wdots{display:flex;gap:8px;margin-top:14px}
+  .wdots span{width:5px;height:5px;border-radius:50%;background:#f0c060;opacity:0.3;animation:dp 1.4s ease-in-out infinite}
+  .wdots span:nth-child(2){animation-delay:.2s}.wdots span:nth-child(3){animation-delay:.4s}
+  @keyframes dp{0%,80%,100%{opacity:0.2;transform:scale(0.8)}40%{opacity:1;transform:scale(1.2)}}
+
+  #minimap{position:fixed;bottom:120px;right:16px;background:#04040f;border:1px solid rgba(240,192,96,0.15);border-radius:12px;padding:10px;width:190px;z-index:50}
+  #minimap-label{font-size:8px;letter-spacing:3px;color:#f0c060;margin-bottom:8px;font-family:'Cinzel',serif}
+  #minimap-track{position:relative;height:190px;background:#030310;border-radius:6px;overflow:hidden}
+  #minimap-track::before{content:'';position:absolute;left:48%;top:0;bottom:0;width:3px;background:#0e0e20}
+  .mm-btn{position:absolute;font-size:8px;cursor:pointer;border-radius:4px;padding:2px 5px;border:1px solid;white-space:nowrap;max-width:72px;overflow:hidden;text-overflow:ellipsis;font-family:'Cinzel',serif;transition:all 0.2s}
+  .mm-btn:hover{opacity:0.8;transform:scale(1.05)}
+
+  #crosshair{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:22px;height:22px;pointer-events:none;z-index:40}
+  #crosshair::before,#crosshair::after{content:'';position:absolute;background:rgba(240,192,96,0.5)}
+  #crosshair::before{top:50%;left:0;right:0;height:1px;margin-top:-0.5px}
+  #crosshair::after{left:50%;top:0;bottom:0;width:1px;margin-left:-0.5px}
+
+  #tooltip{
+    position:fixed;bottom:140px;left:50%;transform:translateX(-50%);
+    background:rgba(0,0,8,0.9);border:1px solid rgba(240,192,96,0.35);
+    border-radius:20px;padding:6px 20px;font-size:12px;color:#f0c060;
+    pointer-events:none;z-index:60;opacity:0;transition:opacity 0.3s;
+    white-space:nowrap;font-family:'Cinzel',serif;letter-spacing:1px;
+  }
+  #tooltip.show{opacity:1}
+
+  #pos-indicator{position:fixed;top:70px;left:16px;background:rgba(4,4,15,0.8);border:1px solid rgba(240,192,96,0.1);border-radius:10px;padding:8px 14px;font-size:10px;letter-spacing:2px;color:#555;z-index:50;font-family:'Cinzel',serif}
+  #pos-monument{color:#f0c060;font-size:11px;margin-top:3px}
+</style>
+</head>
+<body>
+
+<div id="welcome">
+  <div id="welcome-eye">WELCOME TO</div>
+  <h1 id="welcome-h1">Digital India<br><span>VR Tourism</span></h1>
+  <p id="welcome-sub">Walk the runway · Explore 10 iconic monuments</p>
+  <div class="wdots"><span></span><span></span><span></span></div>
+</div>
+
+<div id="crosshair"></div>
+<div id="tooltip"></div>
+
+<div id="hud-top">
+  <div>
+    <div id="hud-title">DIGITAL INDIA TOURISM</div>
+    <div id="hud-sub">VR RUNWAY EXPERIENCE</div>
+  </div>
+  <div id="hud-hint">W/S/A/D · Mouse to look · Click monuments · ESC to pause</div>
+</div>
+
+<div id="voice-bar">
+  <div id="voice-waves"><span></span><span></span><span></span><span></span><span></span></div>
+  <div id="voice-text">NARRATING…</div>
+  <button id="voice-stop-btn" onclick="stopVoice()">■ Stop</button>
+</div>
+
+<div id="pos-indicator">
+  <div>RUNWAY POSITION</div>
+  <div id="pos-monument">—</div>
+</div>
+
+<div id="control-bar">
+  <button id="tour-btn" onclick="toggleTour()">
+    <span class="btn-icon">▶</span>
+    <span id="tour-btn-label">AUTO TOUR</span>
+  </button>
+  <div style="display:flex;align-items:center;gap:8px">
+    <div id="speed-label">SPEED</div>
+    <input id="speed-slider" type="range" min="1" max="5" value="2" oninput="tourSpeed=parseFloat(this.value)">
+  </div>
+</div>
+
+<div id="bottom-strip"></div>
+
+<div id="minimap">
+  <div id="minimap-label">RUNWAY MAP</div>
+  <div id="minimap-track"></div>
+</div>
+
+<div id="info-panel">
+  <div id="panel-header">
+    <button id="panel-close" onclick="closePanel()">✕</button>
+    <div id="panel-eyebrow"></div>
+    <div id="panel-name"></div>
+    <div id="panel-style"></div>
+  </div>
+  <button id="panel-voice-btn" onclick="togglePanelVoice()">
+    <span id="panel-voice-icon">🔊</span>
+    <span id="panel-voice-label">HEAR THE HISTORY</span>
+  </button>
+  <div class="panel-tabs">
+    <button class="tab-btn active" onclick="switchTab('history')">History</button>
+    <button class="tab-btn" onclick="switchTab('architecture')">Architecture</button>
+  </div>
+  <div id="tab-history" class="tab-content active"></div>
+  <div id="tab-architecture" class="tab-content"></div>
+  <div id="facts-section">
+    <div id="facts-eyebrow">DID YOU KNOW</div>
+    <div id="facts-list"></div>
+  </div>
+  <div id="song-box">
+    <div id="song-note">♪</div>
+    <div>
+      <div id="song-label">TRADITIONAL SONG</div>
+      <div id="song-name"></div>
+    </div>
+  </div>
+  <button id="ai-guide-btn" onclick="openAI()">✦ Heritage Explorer Guide</button>
+</div>
+
+<div id="ai-modal">
+  <div id="ai-box">
+    <div id="ai-modal-header">
+      <div>
+        <div id="ai-badge">HERITAGE EXPLORER GUIDE</div>
+        <div id="ai-monument-name"></div>
+      </div>
+      <button id="ai-close-btn" onclick="closeAI()">✕ Close</button>
+    </div>
+    <div id="ai-questions"></div>
+    <div id="ai-loading">✦ Guide is thinking…</div>
+    <div id="ai-answer"></div>
+  </div>
+</div>
+
+<script type="importmap">
+{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { PointerLockControls } from 'three/addons/controls/PointerLockControls.js';
+
+// ── DATA ─────────────────────────────────────────────────────────────────────
+const MONUMENTS = [
+  {
+    id:'tajmahal',name:'Taj Mahal',subtitle:'Agra, Uttar Pradesh · 1653',
+    state:'Uttar Pradesh',year:'1632–1653',style:'Mughal Architecture',
+    accent:'#f0c060',glow:0xf0c060,songName:'Raag Yaman — classical raga of Uttar Pradesh',
+    history:'Commissioned in 1632 by Emperor Shah Jahan in memory of his beloved wife Mumtaz Mahal, the Taj Mahal took over 20,000 artisans 21 years to complete. Built on the banks of the Yamuna in Agra, it stands as the world\'s greatest testament to eternal love. The complex covers 17 hectares and uses white Makrana marble inlaid with 28 types of precious and semi-precious stones. Designated a UNESCO World Heritage Site in 1983, it receives over 7 million visitors annually.',
+    architecture:'The central dome rises 73 metres and is flanked by four 40-metre minarets that lean slightly outward to protect the tomb in an earthquake. The tomb chamber contains elaborate pietra dura inlay work. The complex uses remarkable optical illusions: the gateway arch appears perfectly square from a distance, and the minarets appear perfectly vertical despite their engineered lean.',
+    facts:['Takes on different hues at dawn, dusk and moonlight','The minarets lean outward by 0.25° to protect the main dome','Over 1,000 elephants transported construction materials'],
+    voiceText:'The Taj Mahal, commissioned in 1632 by Emperor Shah Jahan in memory of his beloved wife Mumtaz Mahal, is the world\'s greatest testament to eternal love. Built over 21 years by 20,000 artisans in Agra, Uttar Pradesh, this breathtaking white marble mausoleum stands 73 metres tall. Its central dome is flanked by four soaring minarets, and the entire structure is inlaid with 28 types of precious stones. A UNESCO World Heritage Site, it receives over 7 million visitors annually and changes colour with the light — pink at dawn, white at noon, and golden in moonlight.',
+    modelType:'tajmahal'
+  },
+  {
+    id:'gateway',name:'Gateway of India',subtitle:'Mumbai, Maharashtra · 1924',
+    state:'Maharashtra',year:'1924',style:'Indo-Saracenic Architecture',
+    accent:'#f08040',glow:0xf08040,songName:'Lavani — folk music of Maharashtra',
+    history:'Built to commemorate the landing of King George V and Queen Mary in 1911, the Gateway of India was completed in 1924. In a historic twist, the last British troops to leave India marched through this very arch in February 1948, symbolising the end of colonial rule. It stands at Apollo Bunder on Mumbai Harbour, overlooking the Arabian Sea.',
+    architecture:'Designed by Scottish architect George Wittet in the Indo-Saracenic style, the arch stands 26 metres high. The central dome is 15 metres wide and the structure blends Hindu and Muslim architectural elements. It is built from yellow Kharodi basalt with intricate latticed screens.',
+    facts:['Last British troops left India through this arch in 1948','26 metres tall — as high as a 9-storey building','Built using yellow basalt from Kharodi quarries'],
+    voiceText:'The Gateway of India in Mumbai stands 26 metres tall, an iconic triumphal arch overlooking the Arabian Sea. Built in 1924 in the Indo-Saracenic style to mark the arrival of King George V, it later became the symbol of India\'s independence — the last British troops marched through this very arch in 1948 as they departed forever. Designed by architect George Wittet, it blends Hindu and Muslim architectural styles with intricate basalt carvings. Today it is Mumbai\'s most beloved landmark, where visitors gather to watch the sea and ferries depart for Elephanta Island.',
+    modelType:'arch'
+  },
+  {
+    id:'charminar',name:'Charminar',subtitle:'Hyderabad, Telangana · 1591',
+    state:'Telangana',year:'1591',style:'Indo-Islamic Architecture',
+    accent:'#60c0f0',glow:0x60c0f0,songName:'Perini Sivatandavam — classical dance of Telangana',
+    history:'Built by Muhammad Quli Qutb Shah in 1591 to mark the founding of Hyderabad and the end of a devastating plague. Its name literally means "Four Towers". It has anchored the old city of Hyderabad for over 430 years, surrounded by the legendary Laad Bazaar famous for pearls and glass bangles.',
+    architecture:'A square monument with four grand arches facing the cardinal directions, each 20 metres wide. The four minarets rise 48.7 metres with four floors and decorative balconies. The first floor contains the oldest mosque in Hyderabad.',
+    facts:['Houses the oldest mosque in Hyderabad on its first floor','Each minaret has exactly 149 steps','The surrounding Laad Bazaar is famous for pearls and bangles'],
+    voiceText:'The Charminar, meaning "Four Towers," rises magnificently in the heart of old Hyderabad. Built in 1591 by Sultan Muhammad Quli Qutb Shah to celebrate the founding of Hyderabad and the end of a terrible plague, this Indo-Islamic masterpiece stands 48.7 metres tall. Its four soaring minarets watch over the city from all four cardinal directions, and the first floor houses the oldest mosque in Hyderabad. For over 430 years it has been the soul of the city, surrounded by the glittering Laad Bazaar, famous across India for its pearls and glass bangles.',
+    modelType:'charminar'
+  },
+  {
+    id:'shirdi',name:'Shirdi Sai Baba Temple',subtitle:'Shirdi, Maharashtra · 1922',
+    state:'Maharashtra',year:'1922',style:'Classical Temple Architecture',
+    accent:'#e0a020',glow:0xe0a020,songName:'Sai Bhajan — devotional music of Maharashtra',
+    history:'Built over the samadhi of the beloved saint Sai Baba who lived in Shirdi from about 1858 until his mahasamadhi in 1918. Sai Baba was revered by Hindus and Muslims alike, teaching love, forgiveness, and harmony between all faiths. The temple today receives over 25,000 pilgrims daily.',
+    architecture:'The marble samadhi mandir was consecrated in 1922. The main sanctum houses a life-size marble idol of Sai Baba sculpted by Balaji Vasant Talim. The complex includes the Dwarkamai mosque where Baba lived, the Chavadi where he slept, and the Lendi Garden.',
+    facts:['One of the richest temples in India by donations','Receives over 25,000 devotees every single day','Sai Baba first sat under a neem tree when he arrived in Shirdi'],
+    voiceText:'The Shirdi Sai Baba Temple in Maharashtra is one of India\'s most sacred and beloved pilgrimage sites. Built in 1922 over the samadhi of the great saint Sai Baba, who lived here from around 1858 until his passing in 1918, the temple welcomes over 25,000 devotees every single day. Sai Baba was extraordinary — revered equally by Hindus and Muslims, he preached love, forgiveness, and unity across all faiths. His message "Sabka Malik Ek" — one God for all — still echoes through this temple, making it a shining beacon of India\'s spiritual harmony.',
+    modelType:'temple'
+  },
+  {
+    id:'ramtemple',name:'Ram Temple, Ayodhya',subtitle:'Ayodhya, Uttar Pradesh · 2024',
+    state:'Uttar Pradesh',year:'2024',style:'Nagara Architecture',
+    accent:'#ff8844',glow:0xff8844,songName:'Ramayan Kirtan — devotional chants of Uttar Pradesh',
+    history:'The Shri Ram Janmabhoomi Temple was consecrated on January 22, 2024 at the birthplace of Lord Ram in Ayodhya. After a landmark Supreme Court verdict in 2019, construction began on the sacred site. The consecration ceremony was witnessed by millions across India and the world.',
+    architecture:'Built in Nagara style using pink Rajasthani sandstone, the temple rises 161 feet across three floors. The complex spans 70 acres and includes five mandapams. Remarkably, no iron or steel was used — the structure relies entirely on traditional stone joinery.',
+    facts:['No iron or steel used anywhere in construction','Pink sandstone specially quarried in Rajasthan','Consecrated on January 22, 2024 in a grand ceremony'],
+    voiceText:'The Ram Temple in Ayodhya is one of the most significant spiritual milestones in modern Indian history. Consecrated on January 22, 2024 at the birthplace of Lord Ram, this magnificent Nagara-style temple rises 161 feet on a 70-acre complex. Built entirely from pink Rajasthani sandstone — with no iron or steel used anywhere in its construction — the temple uses ancient traditional stone joinery techniques. It includes five sacred mandapams for prayer, music, and ceremony. The consecration was witnessed by hundreds of millions of Indians and marked a deeply emotional moment for the nation.',
+    modelType:'temple'
+  },
+  {
+    id:'suntemple',name:'Sun Temple, Konark',subtitle:'Konark, Odisha · 1250 CE',
+    state:'Odisha',year:'1250 CE',style:'Kalinga Architecture',
+    accent:'#d06030',glow:0xd06030,songName:'Odissi classical music — traditional music of Odisha',
+    history:'Built by King Narasimhadeva I around 1250 CE, the Konark Sun Temple is conceived as the giant stone chariot of the sun god Surya. A UNESCO World Heritage Site since 1984, known to medieval European mariners as the "Black Pagoda."',
+    architecture:'The entire temple is shaped as a colossal chariot with 24 elaborately carved stone wheels and seven galloping horses. The 24 wheels function as precise sundials — the shadow of the spokes tells exact time.',
+    facts:['The 24 wheels function as working sundials accurate to the minute','Known as the "Black Pagoda" by European sailors for centuries','Took 1,200 artisans 12 years to build'],
+    voiceText:'The Sun Temple at Konark, Odisha, built around 1250 CE, is one of the greatest architectural wonders of the ancient world. Conceived as the colossal stone chariot of Surya, the sun god, the entire temple rolls on 24 exquisitely carved stone wheels and is pulled by seven galloping horses. These 24 wheels are not merely decorative — they function as precise sundials, accurate to the minute. A UNESCO World Heritage Site, it was known to European sailors as the Black Pagoda, a navigational landmark visible from the sea. Over 1,200 artisans worked for 12 years to create this masterpiece.',
+    modelType:'suntemple'
+  },
+  {
+    id:'thanjavur',name:'Brihadeeswarar Temple',subtitle:'Thanjavur, Tamil Nadu · 1010 CE',
+    state:'Tamil Nadu',year:'1010 CE',style:'Dravidian Architecture',
+    accent:'#a060e0',glow:0xa060e0,songName:'Thevaram — ancient Shaiva hymns of Tamil Nadu',
+    history:'Built by the great Chola emperor Raja Raja I and completed in 1010 CE, the Brihadeeswarar Temple is a UNESCO World Heritage Site. Dedicated to Lord Shiva, it represents the zenith of Chola art and architecture. The shadow of the towering vimana never falls on the surrounding ground.',
+    architecture:'The vimana rises 66 metres — among the tallest in India. The crowning kumbam capstone weighs 80 tonnes and was hauled up a 6-km-long earthen ramp. The entire temple was built in just 5 years using precise astronomical measurements.',
+    facts:['The tower shadow never falls on the ground — ever','Built in just 5 years between 1004–1009 CE','81 classical Bharatanatyam poses carved on its walls'],
+    voiceText:'The Brihadeeswarar Temple in Thanjavur, Tamil Nadu, is the crown jewel of Chola civilisation. Built by the great emperor Raja Raja I and completed in just five years by 1010 CE, this UNESCO World Heritage Site soars 66 metres into the sky. Its crowning kumbam capstone weighs an astonishing 80 tonnes and was placed at the top using a 6-kilometre-long earthen ramp. Remarkably, the shadow of this enormous tower never falls on the surrounding ground — an engineering marvel calculated with precise astronomical knowledge over a thousand years ago.',
+    modelType:'gopuram'
+  },
+  {
+    id:'meenakshi',name:'Meenakshi Amman Temple',subtitle:'Madurai, Tamil Nadu · 7th century',
+    state:'Tamil Nadu',year:'7th century CE',style:'Dravidian Architecture',
+    accent:'#40c080',glow:0x40c080,songName:'Thiruvasagam — sacred verses of Manikkavacakar',
+    history:'One of India\'s most ancient and magnificent temples, the Meenakshi Amman Temple has stood in Madurai for over 2,500 years. It receives 15,000 to 20,000 visitors daily and nearly 1 million pilgrims during annual festivals.',
+    architecture:'The complex has 14 gopurams reaching up to 52 metres, adorned with thousands of stucco figures. The legendary Thousand Pillared Hall contains 985 uniquely carved pillars, each producing a distinct musical note when tapped.',
+    facts:['33,000 sculptures adorn the entire complex','The musical pillars each produce a different note when struck','Mentioned in Tamil Sangam literature over 2,000 years ago'],
+    voiceText:'The Meenakshi Amman Temple in Madurai, Tamil Nadu, is one of the most extraordinary sacred complexes in the world. Over 2,500 years old and mentioned in ancient Tamil Sangam literature, it is dedicated to the goddess Meenakshi and Lord Sundareswarar. Its 14 soaring gopuram towers, covered in 33,000 vivid sculptures, rise up to 52 metres and can be seen from across the city. Inside the legendary Thousand Pillared Hall, 985 uniquely carved columns each produce a different musical note when gently tapped — a miracle of ancient acoustic engineering. Between 15,000 and 20,000 devotees visit every single day.',
+    modelType:'gopuram'
+  },
+  {
+    id:'lotus',name:'Lotus Temple',subtitle:'New Delhi · 1986',
+    state:'Delhi',year:'1986',style:'Modern Architecture',
+    accent:'#c0c8ff',glow:0xc0c8ff,songName:'Bahá\'í devotional prayers — universal spiritual music',
+    history:'The Lotus Temple, completed in 1986 and designed by architect Fariborz Sahba, is the Bahá\'í House of Worship for the Indian subcontinent. Open to people of all faiths, no sermons or rituals are conducted — visitors simply sit in quiet reflection. It has received over 100 million visitors.',
+    architecture:'The structure comprises 27 free-standing marble-clad petals arranged in clusters of three, forming nine sides. The soaring central hall rises 40 metres and seats 2,500 people. Nine ornamental reflecting pools create the illusion of the petals floating on water.',
+    facts:['Over 100 million visitors have passed through its doors','Uses the same Pentelic marble as the ancient Parthenon','27 petals are arranged in three groups of nine'],
+    voiceText:'The Lotus Temple in New Delhi is one of the most visited buildings on our entire planet, welcoming over 100 million visitors since it opened in 1986. Designed by the Iranian-Canadian architect Fariborz Sahba, it is the Bahá\'í House of Worship for India — open to every person of every faith, or no faith at all. No sermons are preached, no rituals performed. Visitors simply enter and sit in peaceful reflection beneath 27 soaring marble petals that seem to float on nine reflecting pools. The white Pentelic marble used for the petals is the very same rare Greek marble used to build the ancient Parthenon in Athens.',
+    modelType:'lotus'
+  },
+  {
+    id:'indiagate',name:'India Gate',subtitle:'New Delhi · 1931',
+    state:'Delhi',year:'1931',style:'Triumphal Arch',
+    accent:'#f04060',glow:0xf04060,songName:'Saare Jahan Se Achha — iconic patriotic anthem of India',
+    history:'Designed by Sir Edwin Lutyens, India Gate is a solemn war memorial honouring the 70,000 soldiers of the British Indian Army who died in World War I. Completed in 1931, it bears 13,300 names inscribed in sandstone. The Amar Jawan Jyoti eternal flame was lit on Republic Day 1972.',
+    architecture:'A 42-metre-high triumphal arch modelled on the Arc de Triomphe, built from Bharatpur sandstone. The arch spans Kartavya Path and frames a ceremonial view of Rashtrapati Bhavan. "INDIA" is inscribed on both faces of the arch.',
+    facts:['Bears 13,300 names of fallen soldiers inscribed in stone','Designed by the same architect who designed most of New Delhi','The Amar Jawan Jyoti has burned continuously since January 26, 1972'],
+    voiceText:'India Gate in New Delhi is India\'s most solemn and iconic war memorial. Designed by Sir Edwin Lutyens and completed in 1931, this 42-metre triumphal arch was built to honour the 70,000 soldiers of the British Indian Army who gave their lives in the First World War. The names of 13,300 fallen soldiers are inscribed in the warm golden sandstone. Beneath the arch burns the Amar Jawan Jyoti — the Eternal Flame — lit on Republic Day 1972 to honour India\'s own soldiers who died in the 1971 war. On Republic Day, India\'s grand military parade marches beneath this very arch along Kartavya Path.',
+    modelType:'indiagate'
+  }
+];
+
+// ── SCENE ────────────────────────────────────────────────────────────────────
+const renderer = new THREE.WebGLRenderer({ antialias:true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 0.9;
+document.body.appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x020210);
+scene.fog = new THREE.FogExp2(0x020210, 0.007);
+
+const camera = new THREE.PerspectiveCamera(70, window.innerWidth/window.innerHeight, 0.1, 500);
+camera.position.set(0, 1.7, -128);
+
+// ── CONTROLS ─────────────────────────────────────────────────────────────────
+// Pointer Lock with graceful fallback for browsers that deny permission
+const controls = new PointerLockControls(camera, renderer.domElement);
+let pointerLockSupported = !!(document.pointerLockElement !== undefined || document.mozPointerLockElement !== undefined);
+
+// Mouse-drag fallback state (used when Pointer Lock is unavailable/denied)
+let fallbackMouseDown = false;
+let fallbackLastX = 0, fallbackLastY = 0;
+let fallbackYaw = 0, fallbackPitch = 0;
+
+renderer.domElement.addEventListener('click', () => {
+  if (panelOpen || aiOpen) return;
+  if (pointerLockSupported) {
+    controls.lock();
+  }
+});
+
+// Handle Pointer Lock errors gracefully
+document.addEventListener('pointerlockerror', () => {
+  pointerLockSupported = false;
+  document.getElementById('hud-hint').textContent = 'Drag to look · WASD to move · Click monuments';
+});
+
+// Mouse-drag fallback for look-around when Pointer Lock is unavailable
+renderer.domElement.addEventListener('mousedown', e => {
+  if (!controls.isLocked) { fallbackMouseDown = true; fallbackLastX = e.clientX; fallbackLastY = e.clientY; }
+});
+window.addEventListener('mouseup', () => { fallbackMouseDown = false; });
+window.addEventListener('mousemove', e => {
+  if (!fallbackMouseDown || controls.isLocked) return;
+  const dx = e.clientX - fallbackLastX;
+  const dy = e.clientY - fallbackLastY;
+  fallbackLastX = e.clientX; fallbackLastY = e.clientY;
+  fallbackYaw   -= dx * 0.002;
+  fallbackPitch -= dy * 0.002;
+  fallbackPitch  = Math.max(-Math.PI/3, Math.min(Math.PI/3, fallbackPitch));
+  camera.rotation.order = 'YXZ';
+  camera.rotation.y = fallbackYaw;
+  camera.rotation.x = fallbackPitch;
+});
+
+controls.addEventListener('lock',   () => { document.getElementById('hud-hint').textContent = 'WASD to move · Mouse to look · Click monument · ESC to pause'; });
+controls.addEventListener('unlock', () => { document.getElementById('hud-hint').textContent = 'Click screen to resume · WASD or Arrow keys · Click monuments'; });
+
+const keys = {};
+window.addEventListener('keydown', e => { keys[e.code] = true; });
+window.addEventListener('keyup',   e => { keys[e.code] = false; });
+
+// ── LIGHTS ───────────────────────────────────────────────────────────────────
+scene.add(new THREE.AmbientLight(0x1a1040, 0.9));
+const sun = new THREE.DirectionalLight(0xffe8c0, 1.2);
+sun.position.set(5,15,5); sun.castShadow = true; scene.add(sun);
+scene.add(new THREE.HemisphereLight(0x1a1050,0x080810,0.4));
+
+// ── STARS ────────────────────────────────────────────────────────────────────
+const starArr = new Float32Array(6000*3);
+for (let i=0;i<starArr.length;i++) starArr[i]=(Math.random()-0.5)*600;
+const starGeo = new THREE.BufferGeometry();
+starGeo.setAttribute('position',new THREE.BufferAttribute(starArr,3));
+scene.add(new THREE.Points(starGeo,new THREE.PointsMaterial({color:0xffffff,size:0.25,transparent:true,opacity:0.6})));
+
+const pArr = new Float32Array(600*3);
+for (let i=0;i<600;i++){pArr[i*3]=(Math.random()-0.5)*70;pArr[i*3+1]=Math.random()*14;pArr[i*3+2]=(Math.random()-0.5)*320;}
+const partGeo = new THREE.BufferGeometry();
+partGeo.setAttribute('position',new THREE.BufferAttribute(pArr,3));
+const particles = new THREE.Points(partGeo,new THREE.PointsMaterial({color:0xf0c060,size:0.08,transparent:true,opacity:0.5,sizeAttenuation:true}));
+scene.add(particles);
+
+// ── RUNWAY ───────────────────────────────────────────────────────────────────
+const floorM = new THREE.MeshStandardMaterial({color:0x04040d,roughness:0.95});
+const floorGeo = new THREE.PlaneGeometry(20,340);
+const floor = new THREE.Mesh(floorGeo,floorM);
+floor.rotation.x=-Math.PI/2; floor.position.set(0,-0.5,-10); floor.receiveShadow=true; scene.add(floor);
+
+for (let i=0;i<70;i++){
+  const t=new THREE.Mesh(new THREE.PlaneGeometry(9.8,4.8),new THREE.MeshStandardMaterial({color:i%2===0?0x080818:0x050514}));
+  t.rotation.x=-Math.PI/2; t.position.set(0,-0.49,-145+i*5); scene.add(t);
+  const d=new THREE.Mesh(new THREE.PlaneGeometry(0.2,3.5),new THREE.MeshStandardMaterial({color:0xf0c060,emissive:0xf0c060,emissiveIntensity:0.7}));
+  d.rotation.x=-Math.PI/2; d.position.set(0,-0.47,-145+i*5); scene.add(d);
+  [-5.5,5.5].forEach(x=>{
+    const el=new THREE.Mesh(new THREE.SphereGeometry(0.07,6,6),new THREE.MeshStandardMaterial({color:0xff5020,emissive:0xff5020,emissiveIntensity:6}));
+    el.position.set(x,-0.37,-145+i*5); scene.add(el);
+  });
+}
+
+// ── WALLS ────────────────────────────────────────────────────────────────────
+const wm = new THREE.MeshStandardMaterial({color:0x040412,side:THREE.DoubleSide});
+const lw=new THREE.Mesh(new THREE.PlaneGeometry(340,16),wm); lw.rotation.y=Math.PI/2; lw.position.set(-10,7,-10); scene.add(lw);
+const rw=new THREE.Mesh(new THREE.PlaneGeometry(340,16),wm.clone()); rw.rotation.y=-Math.PI/2; rw.position.set(10,7,-10); scene.add(rw);
+const ceil=new THREE.Mesh(new THREE.PlaneGeometry(20,340),wm.clone()); ceil.rotation.x=Math.PI/2; ceil.position.set(0,14,-10); scene.add(ceil);
+[['#ff8800',8],['#ffffff',6.5],['#138808',5]].forEach(([col,y])=>{
+  const s=new THREE.Mesh(new THREE.PlaneGeometry(340,0.35),new THREE.MeshStandardMaterial({color:col,emissive:col,emissiveIntensity:0.5,side:THREE.DoubleSide}));
+  s.rotation.y=Math.PI/2; s.position.set(-9.8,y,-10); scene.add(s);
+});
+
+// ── HELPERS ──────────────────────────────────────────────────────────────────
+function makeTextSprite(text,color,size=60){
+  const c=document.createElement('canvas'); c.width=1024; c.height=128;
+  const ctx=c.getContext('2d');
+  ctx.clearRect(0,0,1024,128);
+  ctx.font=`bold ${size}px Georgia,serif`;
+  ctx.fillStyle='#'+new THREE.Color(color).getHexString();
+  ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText(text,512,64);
+  const m=new THREE.Mesh(new THREE.PlaneGeometry(12,1.5),new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(c),transparent:true,side:THREE.DoubleSide}));
+  return m;
+}
+
+function makeArch(z,label,color){
+  const g=new THREE.Group(); g.position.z=z; scene.add(g);
+  const mat=new THREE.MeshStandardMaterial({color,emissive:color,emissiveIntensity:1.0,metalness:0.7,roughness:0.2});
+  const arc=new THREE.Mesh(new THREE.TorusGeometry(5,0.25,12,60,Math.PI),mat);
+  arc.position.y=5; arc.rotation.x=Math.PI; g.add(arc);
+  [-5,5].forEach(x=>{const p=new THREE.Mesh(new THREE.CylinderGeometry(0.25,0.25,5),mat.clone());p.position.set(x,2.5,0);g.add(p);});
+  const lbl=makeTextSprite(label,color); lbl.position.set(0,11,0); g.add(lbl);
+  const archLight=new THREE.PointLight(color,2,22); archLight.position.set(0,6,0); g.add(archLight);
+}
+makeArch(-145,'DISCOVER INCREDIBLE INDIA',0xf0c060);
+makeArch(8,'DIGITAL INDIA TOURISM',0x138808);
+
+// ── 3D MODELS ────────────────────────────────────────────────────────────────
+function buildModel(monument,wx,wz){
+  const g=new THREE.Group(); g.position.set(wx,-0.5,wz);
+  const col=monument.glow;
+  const bM=new THREE.MeshStandardMaterial({color:col,emissive:col,emissiveIntensity:0.15,metalness:0.3,roughness:0.6});
+  const aM=new THREE.MeshStandardMaterial({color:col,emissive:col,emissiveIntensity:0.5,metalness:0.5,roughness:0.3});
+  const wM=new THREE.MeshStandardMaterial({color:0xf8f4ee,emissive:col,emissiveIntensity:0.05});
+  const dM=new THREE.MeshStandardMaterial({color:0x151530,roughness:0.8});
+  const add=(geo,mat,x=0,y=0,z=0,rx=0,ry=0,rz=0)=>{
+    const m=new THREE.Mesh(geo,mat);
+    m.position.set(x,y,z); if(rx||ry||rz) m.rotation.set(rx,ry,rz);
+    g.add(m); return m;
+  };
+
+  const type=monument.modelType;
+
+  if(type==='tajmahal'){
+    add(new THREE.BoxGeometry(3.2,0.2,3.2),bM.clone(),0,0,0);
+    add(new THREE.BoxGeometry(2.4,0.4,2.4),wM.clone(),0,0.3,0);
+    add(new THREE.BoxGeometry(1.4,1.2,1.4),wM.clone(),0,1.0,0);
+    add(new THREE.SphereGeometry(0.7,20,16,0,Math.PI*2,0,Math.PI/1.8),wM.clone(),0,1.9,0);
+    add(new THREE.CylinderGeometry(0.04,0.06,0.5,8),aM.clone(),0,2.6,0);
+    [[-1.1,-1.1],[1.1,-1.1],[-1.1,1.1],[1.1,1.1]].forEach(([mx,mz])=>{
+      add(new THREE.CylinderGeometry(0.1,0.13,2.0,10),wM.clone(),mx,1.2,mz);
+      add(new THREE.SphereGeometry(0.12,8,8,0,Math.PI*2,0,Math.PI/1.8),aM.clone(),mx,2.3,mz);
+    });
+    add(new THREE.TorusGeometry(0.3,0.05,8,20,Math.PI),aM.clone(),0,1.1,0.71,Math.PI);
+  }
+  else if(type==='arch'){
+    add(new THREE.BoxGeometry(3,0.3,1.2),bM.clone(),0,0.15,0);
+    [-1.2,1.2].forEach(px=>add(new THREE.BoxGeometry(0.6,3.0,0.8),bM.clone(),px,1.65,0));
+    add(new THREE.TorusGeometry(1.15,0.2,10,30,Math.PI),aM.clone(),0,3.15,0,Math.PI);
+    add(new THREE.SphereGeometry(0.4,12,8,0,Math.PI*2,0,Math.PI/1.8),aM.clone(),0,3.5,0);
+    [-1.2,1.2].forEach(px=>add(new THREE.CylinderGeometry(0.12,0.14,0.8,8),bM.clone(),px,3.15,0));
+  }
+  else if(type==='charminar'){
+    add(new THREE.BoxGeometry(1.8,0.3,1.8),bM.clone(),0,0.15,0);
+    add(new THREE.BoxGeometry(1.5,1.8,1.5),bM.clone(),0,1.2,0);
+    [[0,0,0.75],[0,0,-0.75],[0.75,0,0],[-0.75,0,0]].forEach(([ax,ay,az],i)=>{
+      const a=add(new THREE.TorusGeometry(0.5,0.06,8,20,Math.PI),aM.clone(),ax,1.3+ay,az,Math.PI);
+      if(i>=2) a.rotation.y=Math.PI/2;
+    });
+    [[-0.9,-0.9],[0.9,-0.9],[-0.9,0.9],[0.9,0.9]].forEach(([mx,mz])=>{
+      add(new THREE.CylinderGeometry(0.1,0.14,3.5,10),aM.clone(),mx,1.75,mz);
+      for(let f=0;f<3;f++) add(new THREE.TorusGeometry(0.12,0.025,6,14),bM.clone(),mx,0.8+f*0.9,mz);
+      add(new THREE.ConeGeometry(0.14,0.3,10),aM.clone(),mx,3.65,mz);
+    });
+    add(new THREE.CylinderGeometry(0.6,0.8,0.5,8),bM.clone(),0,2.35,0);
+    add(new THREE.SphereGeometry(0.4,12,8,0,Math.PI*2,0,Math.PI/1.8),aM.clone(),0,2.7,0);
+  }
+  else if(type==='temple'){
+    [[2.4,0.18],[2.0,0.36],[1.6,0.54]].forEach(([w,y])=>add(new THREE.BoxGeometry(w,0.2,w),bM.clone(),0,y,0));
+    add(new THREE.BoxGeometry(1.2,1.0,1.2),bM.clone(),0,1.14,0);
+    for(let s=0;s<5;s++) add(new THREE.BoxGeometry(1.1-s*0.18,0.35,1.1-s*0.18),bM.clone(),0,1.8+s*0.38,0);
+    add(new THREE.TorusGeometry(0.22,0.07,8,14),aM.clone(),0,3.75,0);
+    add(new THREE.SphereGeometry(0.12,8,8),aM.clone(),0,3.95,0);
+    [-0.45,0.45].forEach(px=>add(new THREE.CylinderGeometry(0.07,0.07,1.0,8),bM.clone(),px,1.1,0.62));
+  }
+  else if(type==='suntemple'){
+    add(new THREE.BoxGeometry(3.5,0.25,2.2),bM.clone(),0,0.12,0);
+    [[-1.3,0.3,1.15],[0,0.3,1.15],[1.3,0.3,1.15],[-1.3,0.3,-1.15],[0,0.3,-1.15],[1.3,0.3,-1.15]].forEach(([wx2,wy,wz2])=>{
+      const wh=add(new THREE.TorusGeometry(0.3,0.07,10,20),aM.clone(),wx2,wy,wz2,0,Math.PI/2,0);
+      for(let sp=0;sp<8;sp++){
+        const spk=add(new THREE.CylinderGeometry(0.02,0.02,0.55,4),bM.clone(),wx2,wy,wz2);
+        spk.rotation.z=sp*Math.PI/4;
+      }
+    });
+    add(new THREE.BoxGeometry(2.8,1.2,1.6),bM.clone(),0,0.85,0);
+    for(let s=0;s<4;s++){const sw=2.0-s*0.35;add(new THREE.BoxGeometry(sw,0.45,sw*0.7),bM.clone(),0,1.7+s*0.47,0);}
+    add(new THREE.ConeGeometry(0.45,0.8,8),aM.clone(),0,3.8,0);
+  }
+  else if(type==='gopuram'){
+    add(new THREE.BoxGeometry(2.8,0.3,2.0),bM.clone(),0,0.15,0);
+    for(let l=0;l<9;l++){
+      const lw=2.4-l*0.22; const ld=1.6-l*0.14;
+      add(new THREE.BoxGeometry(lw,0.35,ld),bM.clone(),0,0.5+l*0.37,0);
+      if(l%2===0) add(new THREE.SphereGeometry(0.08,6,6),aM.clone(),0,0.5+l*0.37,ld/2+0.05);
+    }
+    add(new THREE.CylinderGeometry(0.22,0.5,0.8,14,1,false,0,Math.PI),aM.clone(),0,3.85,0,0,0,Math.PI/2);
+    [-0.3,0,0.3].forEach(kx=>add(new THREE.SphereGeometry(0.1,8,8),aM.clone(),kx,4.35,0));
+  }
+  else if(type==='lotus'){
+    add(new THREE.CylinderGeometry(1.8,1.8,0.15,32),dM.clone(),0,0.08,0);
+    add(new THREE.RingGeometry(1.0,1.75,32),new THREE.MeshStandardMaterial({color:0x0a1a3a,emissive:0x0a2040,emissiveIntensity:0.5,side:THREE.DoubleSide}),0,0.16,0,-Math.PI/2);
+    add(new THREE.CylinderGeometry(0.8,0.9,1.0,32),wM.clone(),0,0.65,0);
+    add(new THREE.SphereGeometry(0.85,24,16,0,Math.PI*2,0,Math.PI/2),wM.clone(),0,1.15,0);
+    // Petals using CylinderGeometry (elongated) instead of CapsuleGeometry
+    for(let p=0;p<9;p++){
+      const ang=(p/9)*Math.PI*2;
+      const pm=new THREE.Mesh(new THREE.CylinderGeometry(0.1,0.05,0.8,8),wM.clone());
+      pm.position.set(Math.cos(ang)*1.1,1.0,Math.sin(ang)*1.1);
+      pm.rotation.z=-Math.PI/6; pm.rotation.y=-ang; g.add(pm);
+    }
+    for(let p=0;p<9;p++){
+      const ang=(p/9)*Math.PI*2+Math.PI/9;
+      const pm=new THREE.Mesh(new THREE.CylinderGeometry(0.07,0.04,0.65,8),wM.clone());
+      pm.position.set(Math.cos(ang)*0.75,1.15,Math.sin(ang)*0.75);
+      pm.rotation.z=-Math.PI/5; pm.rotation.y=-ang; g.add(pm);
+    }
+  }
+  else if(type==='indiagate'){
+    add(new THREE.BoxGeometry(3.2,0.25,1.6),bM.clone(),0,0.12,0);
+    [-1.1,1.1].forEach(px=>add(new THREE.BoxGeometry(0.7,3.5,0.8),bM.clone(),px,1.88,0));
+    add(new THREE.TorusGeometry(1.05,0.22,10,30,Math.PI),aM.clone(),0,3.62,0,Math.PI);
+    add(new THREE.BoxGeometry(3.0,0.35,0.9),bM.clone(),0,3.88,0);
+    add(new THREE.BoxGeometry(3.2,0.3,1.1),bM.clone(),0,4.12,0);
+    const lbl=makeTextSprite('INDIA',col,80); lbl.scale.set(1.5,0.35,1); lbl.position.set(0,4.0,0.55); g.add(lbl);
+    const flame=new THREE.Mesh(new THREE.ConeGeometry(0.08,0.3,8),new THREE.MeshStandardMaterial({color:0xff8800,emissive:0xff6600,emissiveIntensity:8}));
+    flame.position.set(0,0.55,0); g.add(flame);
+    const fl=new THREE.PointLight(0xff6600,3,4); fl.position.set(0,0.7,0); g.add(fl);
+    g.userData.flame=flame; g.userData.flameLight=fl;
+  }
+
+  // Glow ring at base
+  const ring=new THREE.Mesh(new THREE.TorusGeometry(1.8,0.04,8,40),new THREE.MeshStandardMaterial({color:col,emissive:col,emissiveIntensity:2}));
+  ring.rotation.x=-Math.PI/2; ring.position.y=-0.48; g.add(ring);
+
+  // Spotlight
+  const spot=new THREE.SpotLight(col,3,14,0.45,0.6);
+  spot.position.set(wx,9,wz); scene.add(spot); scene.add(spot.target);
+  spot.target.position.set(wx,0,wz);
+
+  scene.add(g);
+  return g;
+}
+
+// ── CARDS & MODELS ───────────────────────────────────────────────────────────
+const cardMeshes=[];
+const allModels=[];
+
+MONUMENTS.forEach((m,i)=>{
+  const cardSide=i%2===0?-7.5:7.5;
+  const modelSide=i%2===0?7:-7;
+  const z=-128+i*16;
+  const rotY=i%2===0?Math.PI/2:-Math.PI/2;
+
+  // 3D model
+  const mg=buildModel(m,modelSide,z);
+  mg.rotation.y=i%2===0?-Math.PI/2:Math.PI/2;
+  allModels.push({group:mg,monument:m,baseY:-0.5});
+
+  // Info card
+  const g=new THREE.Group();
+  g.position.set(cardSide,1.8,z);
+  g.rotation.y=rotY;
+  scene.add(g);
+
+  const borderMat=new THREE.MeshStandardMaterial({color:m.glow,emissive:m.glow,emissiveIntensity:0.4,metalness:0.8,roughness:0.2});
+  const border=new THREE.Mesh(new THREE.BoxGeometry(3.6,3.2,0.05),borderMat);
+  border.position.z=-0.07; g.add(border);
+  const cardBg=new THREE.Mesh(new THREE.BoxGeometry(3.4,3.0,0.06),new THREE.MeshStandardMaterial({color:0x060620})); cardBg.position.set(0,0,-0.09); g.add(cardBg);
+
+  // Canvas panel
+  const cv=document.createElement('canvas'); cv.width=512; cv.height=384;
+  const ctx=cv.getContext('2d');
+  const grd=ctx.createLinearGradient(0,0,512,384);
+  grd.addColorStop(0,'#06061a'); grd.addColorStop(1,'#0a0a20');
+  ctx.fillStyle=grd; ctx.fillRect(0,0,512,384);
+  ctx.strokeStyle=m.accent; ctx.lineWidth=3; ctx.strokeRect(10,10,492,364);
+  const icons={tajmahal:'🕌',gateway:'🏛️',charminar:'🕌',shirdi:'🛕',ramtemple:'🛕',suntemple:'☀️',thanjavur:'🛕',meenakshi:'🛕',lotus:'🪷',indiagate:'🏛️'};
+  ctx.font='100px serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText(icons[m.id]||'🏛️',256,150);
+  ctx.fillStyle=m.accent; ctx.font='bold 34px Georgia,serif'; ctx.fillText(m.name,256,290);
+  ctx.fillStyle='#888'; ctx.font='22px Georgia,serif'; ctx.fillText(m.subtitle,256,332);
+  const panelMesh=new THREE.Mesh(new THREE.PlaneGeometry(3.2,2.6),new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(cv),transparent:true,side:THREE.DoubleSide}));
+  panelMesh.position.set(0,0.1,0.01); g.add(panelMesh);
+
+  const clk=makeTextSprite('▶ Click to Explore',m.glow,48);
+  clk.scale.set(3.2,0.4,1); clk.position.set(0,-1.42,0.02); g.add(clk);
+
+  cardMeshes.push({group:g,border,monument:m,borderMat});
+});
+
+// ── RAYCASTER ────────────────────────────────────────────────────────────────
+const raycaster=new THREE.Raycaster();
+const ctr=new THREE.Vector2(0,0);
+let panelOpen=false, aiOpen=false, activeMonument=null;
+
+function findMonumentFromHit(hits){
+  for(const h of hits){
+    let obj=h.object;
+    while(obj){
+      const c=cardMeshes.find(c=>c.group===obj);
+      if(c) return c.monument;
+      const mg=allModels.find(mg=>mg.group===obj);
+      if(mg) return mg.monument;
+      obj=obj.parent;
+    }
+  }
+  return null;
+}
+
+renderer.domElement.addEventListener('click',()=>{
+  if(!controls.isLocked) return;
+  raycaster.setFromCamera(ctr,camera);
+  const hits=raycaster.intersectObjects(scene.children,true);
+  const m=findMonumentFromHit(hits);
+  if(m) openPanel(m);
+});
+
+function updateHover(){
+  raycaster.setFromCamera(ctr,camera);
+  const hits=raycaster.intersectObjects(scene.children,true);
+  const hm=findMonumentFromHit(hits);
+  cardMeshes.forEach(c=>{
+    const active=activeMonument?.id===c.monument.id;
+    const hovered=hm?.id===c.monument.id;
+    c.borderMat.emissiveIntensity=active?1.8:(hovered?1.0:0.4);
+    c.border.scale.setScalar(active||hovered?1.04:1);
+  });
+  const tt=document.getElementById('tooltip');
+  if(hm&&controls.isLocked){tt.textContent='▶ Click to explore '+hm.name;tt.classList.add('show');}
+  else tt.classList.remove('show');
+}
+
+// ── PANEL ────────────────────────────────────────────────────────────────────
+function openPanel(m){
+  activeMonument=m; panelOpen=true;
+  document.getElementById('panel-eyebrow').textContent=m.state.toUpperCase()+' · '+m.year;
+  document.getElementById('panel-eyebrow').style.color=m.accent;
+  document.getElementById('panel-name').textContent=m.name;
+  document.getElementById('panel-style').textContent=m.style;
+  document.getElementById('tab-history').textContent=m.history;
+  document.getElementById('tab-architecture').textContent=m.architecture;
+  document.getElementById('song-note').style.color=m.accent;
+  document.getElementById('song-label').style.color=m.accent;
+  document.getElementById('song-name').textContent=m.songName;
+  document.getElementById('ai-guide-btn').style.color=m.accent;
+  document.getElementById('ai-guide-btn').style.borderColor=m.accent+'44';
+  document.getElementById('panel-voice-btn').classList.remove('speaking');
+  document.getElementById('panel-voice-label').textContent='HEAR THE HISTORY';
+  document.getElementById('panel-voice-icon').textContent='🔊';
+  const fl=document.getElementById('facts-list'); fl.innerHTML='';
+  m.facts.forEach(f=>{fl.innerHTML+=`<div class="fact-item"><span class="fact-dot" style="color:${m.accent}">✦</span><span>${f}</span></div>`;});
+  switchTab('history');
+  document.getElementById('info-panel').classList.add('open');
+  document.getElementById('hud-top').style.right='420px';
+  document.getElementById('bottom-strip').style.right='420px';
+  document.getElementById('minimap').style.display='none';
+  buildStrip();
+  controls.unlock();
+  speakText(m.voiceText,m);
+}
+
+window.closePanel=function(){
+  panelOpen=false; activeMonument=null;
+  document.getElementById('info-panel').classList.remove('open');
+  document.getElementById('hud-top').style.right='0';
+  document.getElementById('bottom-strip').style.right='0';
+  document.getElementById('minimap').style.display='block';
+  stopVoice();
+  cardMeshes.forEach(c=>{c.borderMat.emissiveIntensity=0.4;});
+  buildStrip();
+};
+
+window.switchTab=function(tab){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+  document.querySelector(`.tab-btn:${tab==='history'?'first-child':'last-child'}`).classList.add('active');
+  document.getElementById('tab-'+tab).classList.add('active');
+};
+
+// ── VOICE ────────────────────────────────────────────────────────────────────
+let voiceActive=false;
+
+window.speakText=function(text,monument){
+  stopVoice();
+  if(!window.speechSynthesis) return;
+  const utt=new SpeechSynthesisUtterance(text);
+  utt.rate=0.88; utt.pitch=1.0; utt.volume=1.0;
+  const voices=window.speechSynthesis.getVoices();
+  const pref=voices.find(v=>v.lang.startsWith('en')&&(v.name.includes('Google')||v.name.includes('Natural')||v.name.includes('Daniel')||v.name.includes('Samantha')));
+  if(pref) utt.voice=pref;
+  voiceActive=true;
+  document.getElementById('voice-text').textContent='NARRATING '+((monument?.name)||'').toUpperCase();
+  document.getElementById('voice-bar').classList.add('show');
+  document.getElementById('panel-voice-btn').classList.add('speaking');
+  document.getElementById('panel-voice-label').textContent='■ STOP NARRATION';
+  document.getElementById('panel-voice-icon').textContent='⏹';
+  utt.onend=utt.onerror=()=>{
+    voiceActive=false;
+    document.getElementById('voice-bar').classList.remove('show');
+    const pb=document.getElementById('panel-voice-btn');
+    if(pb){pb.classList.remove('speaking');document.getElementById('panel-voice-label').textContent='HEAR THE HISTORY';document.getElementById('panel-voice-icon').textContent='🔊';}
+  };
+  window.speechSynthesis.speak(utt);
+};
+
+window.stopVoice=function(){
+  if(window.speechSynthesis) window.speechSynthesis.cancel();
+  voiceActive=false;
+  document.getElementById('voice-bar').classList.remove('show');
+  const pb=document.getElementById('panel-voice-btn');
+  if(pb){pb.classList.remove('speaking');document.getElementById('panel-voice-label').textContent='HEAR THE HISTORY';document.getElementById('panel-voice-icon').textContent='🔊';}
+};
+
+window.togglePanelVoice=function(){
+  if(voiceActive&&window.speechSynthesis.speaking) stopVoice();
+  else if(activeMonument) speakText(activeMonument.voiceText,activeMonument);
+};
+
+// Pre-load voices
+if(window.speechSynthesis){
+  window.speechSynthesis.getVoices();
+  window.speechSynthesis.onvoiceschanged=()=>window.speechSynthesis.getVoices();
+}
+
+// ── TOUR ─────────────────────────────────────────────────────────────────────
+let tourRunning=false;
+let tourSpeed=2;
+let tourIndex=0;
+let tourPhase='move';
+let tourTimer=0;
+const TOUR_PAUSE=6;
+
+window.toggleTour=function(){
+  tourRunning=!tourRunning;
+  const btn=document.getElementById('tour-btn');
+  if(tourRunning){
+    btn.classList.add('running');
+    btn.querySelector('.btn-icon').textContent='■';
+    document.getElementById('tour-btn-label').textContent='STOP TOUR';
+    if(panelOpen) window.closePanel();
+    controls.unlock();
+  } else {
+    btn.classList.remove('running');
+    btn.querySelector('.btn-icon').textContent='▶';
+    document.getElementById('tour-btn-label').textContent='AUTO TOUR';
+  }
+};
+
+// ── STRIP & MINIMAP ───────────────────────────────────────────────────────────
+function buildStrip(){
+  const strip=document.getElementById('bottom-strip'); strip.innerHTML='';
+  MONUMENTS.forEach(m=>{
+    const btn=document.createElement('button');
+    btn.className='strip-btn'+(activeMonument?.id===m.id?' active':'');
+    btn.textContent=m.name;
+    if(activeMonument?.id===m.id){btn.style.background=m.accent;btn.style.borderColor=m.accent;btn.style.color='#000';}
+    btn.onclick=()=>{teleportTo(m);openPanel(m);};
+    strip.appendChild(btn);
+  });
+}
+buildStrip();
+
+function buildMinimap(){
+  const track=document.getElementById('minimap-track'); track.innerHTML='';
+  MONUMENTS.forEach((m,i)=>{
+    const btn=document.createElement('button');
+    btn.className='mm-btn';
+    btn.textContent=m.name;
+    btn.style.top=((i/(MONUMENTS.length-1))*162+8)+'px';
+    btn.style.left=i%2===0?'5%':'53%';
+    btn.style.background=m.accent+'22'; btn.style.borderColor=m.accent; btn.style.color=m.accent;
+    btn.onclick=()=>{teleportTo(m);openPanel(m);};
+    track.appendChild(btn);
+  });
+}
+buildMinimap();
+
+function teleportTo(m){
+  const i=MONUMENTS.findIndex(x=>x.id===m.id);
+  camera.position.set(0,1.7,-128+i*16+6);
+}
+
+// ── MOVEMENT ─────────────────────────────────────────────────────────────────
+const velocity=new THREE.Vector3();
+const direction=new THREE.Vector3();
+
+function updateMovement(dt){
+  velocity.x-=velocity.x*10*dt;
+  velocity.z-=velocity.z*10*dt;
+  direction.z=((keys['KeyW']||keys['ArrowUp'])?1:0)-((keys['KeyS']||keys['ArrowDown'])?1:0);
+  direction.x=((keys['KeyD']||keys['ArrowRight'])?1:0)-((keys['KeyA']||keys['ArrowLeft'])?1:0);
+  direction.normalize();
+  const sp=50;
+  if(direction.z!==0) velocity.z-=direction.z*sp*dt;
+  if(direction.x!==0) velocity.x-=direction.x*sp*dt;
+  if(controls.isLocked){controls.moveRight(-velocity.x*dt);controls.moveForward(-velocity.z*dt);}
+  camera.position.y=1.7;
+  camera.position.x=THREE.MathUtils.clamp(camera.position.x,-8.5,8.5);
+  camera.position.z=THREE.MathUtils.clamp(camera.position.z,-148,15);
+}
+
+function updateTour(dt){
+  if(!tourRunning||panelOpen) return;
+  const targetZ=-128+tourIndex*16;
+  const targetX=tourIndex%2===0?-1:1;
+  if(tourPhase==='move'){
+    const dz=targetZ-camera.position.z;
+    const dx=targetX-camera.position.x;
+    const dist=Math.sqrt(dx*dx+dz*dz);
+    if(dist<1.5){tourPhase='view';tourTimer=0;}
+    else{camera.position.z+=(dz/dist)*tourSpeed*dt*5;camera.position.x+=(dx/dist)*tourSpeed*dt*1.5;}
+    const lx=tourIndex%2===0?-7.5:7.5;
+    const dir2=new THREE.Vector3(lx,1.8,targetZ).sub(camera.position).normalize();
+    if(dir2.length()>0){
+      const tq=new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,0,-1),dir2);
+      const e=new THREE.Euler().setFromQuaternion(tq,'YXZ');
+      camera.rotation.y=THREE.MathUtils.lerp(camera.rotation.y,e.y,0.05);
+      camera.rotation.x=THREE.MathUtils.lerp(camera.rotation.x,e.x*0.3,0.05);
+    }
+  } else {
+    tourTimer+=dt;
+    if(tourTimer>=TOUR_PAUSE){tourPhase='move';tourIndex=(tourIndex+1)%MONUMENTS.length;}
+  }
+}
+
+function updatePosIndicator(){
+  const cz=camera.position.z;
+  let closest=null,closestD=Infinity;
+  MONUMENTS.forEach((m,i)=>{const d=Math.abs(cz-(-128+i*16));if(d<closestD){closestD=d;closest=m;}});
+  const el=document.getElementById('pos-monument');
+  if(closest&&closestD<12){el.textContent=closest.name;el.style.color=closest.accent;}
+  else{el.textContent='—';el.style.color='#f0c060';}
+}
+
+// ── ANIMATE (single loop) ────────────────────────────────────────────────────
+const clock=new THREE.Clock();
+let _prevTime=0;
+
+function animate(){
+  requestAnimationFrame(animate);
+  const now=clock.getElapsedTime();
+  const dt=Math.min(now-_prevTime,0.05);
+  _prevTime=now;
+
+  updateMovement(dt);
+  updateTour(dt);
+  updateHover();
+  updatePosIndicator();
+
+  particles.rotation.y=now*0.01;
+
+  allModels.forEach((mg,i)=>{
+    mg.group.position.y=mg.baseY+Math.sin(now*0.6+i*0.7)*0.1;
+    mg.group.rotation.y+=0.003;
+    if(mg.group.userData.flame){
+      mg.group.userData.flame.position.y=0.55+Math.sin(now*8)*0.03;
+      mg.group.userData.flameLight.intensity=3+Math.sin(now*12)*1.5;
+    }
+  });
+
+  cardMeshes.forEach(c=>{
+    if(c.monument.id===activeMonument?.id) c.borderMat.emissiveIntensity=1.0+Math.sin(now*3)*0.5;
+  });
+
+  renderer.render(scene,camera);
+}
+animate();
+
+// ── HERITAGE EXPLORER GUIDE ──────────────────────────────────────────────────
+// Rich local knowledge base — no external API needed, always works offline
+const GUIDE_DATA = {
+  tajmahal: {
+    best_time: 'The best time to visit the Taj Mahal is from October to March when the weather is pleasantly cool (15–25°C). Arrive at sunrise for golden light on the white marble and the smallest crowds. The full moon nights, when the Taj is open for night viewing, are truly magical — book tickets well in advance.',
+    photography: 'The iconic reflection shot is captured from the central pool on the main axis — arrive at dawn for still water and soft light. Shoot from the entrance gateway arch to frame the entire monument perfectly. The marble changes from pink at sunrise to ivory white at noon and golden at dusk, so plan multiple visits for different moods.',
+    nearby: 'Within 2 km: Agra Fort (a UNESCO World Heritage Site), Mehtab Bagh (for the best sunset view across the Yamuna). Within 50 km: Fatehpur Sikri (the ghost city of Emperor Akbar) and the wildlife sanctuary of Keoladeo Ghana in Bharatpur.',
+    fees: 'Indian citizens pay ₹50; foreign nationals pay ₹1,300. Entry includes the main mausoleum platform. The inner tomb chamber has an additional ₹200 charge. The Taj is open from sunrise to sunset every day except Friday (closed for prayers). Night viewing (5 nights per month around the full moon) costs ₹750.',
+    unique: 'The Taj Mahal is the only building in the world that appears to change colour throughout the day — pink at dawn, white at noon, and golden in moonlight. Its four minarets lean slightly outward so that if they fell, they would fall away from the tomb. Over 1,000 elephants transported the 28 types of precious stones used in its inlay work.'
+  },
+  gateway: {
+    best_time: 'Visit between November and February for pleasant Mumbai weather. Early morning (7–9 AM) is ideal to beat crowds and enjoy the harbour in soft light. The monsoon season (June–September) brings dramatic cloudy skies that make for spectacular photos, though the sea can be rough.',
+    photography: 'Shoot from the Colaba waterfront for the classic composition with the harbour. The arch is beautifully lit at night with warm golden lights — one of Mumbai\'s finest night photography subjects. Try the ferry to Elephanta Island for a stunning reverse shot of the Gateway from the water.',
+    nearby: 'Within walking distance: the Taj Mahal Palace Hotel (one of India\'s grandest heritage hotels), Colaba Causeway market, and the Chhatrapati Shivaji Maharaj Vastu Sangrahalaya (Prince of Wales Museum). A short ferry ride takes you to Elephanta Island with its famous cave temples.',
+    fees: 'Entry to the Gateway of India monument is free. Ferry tickets to Elephanta Island cost around ₹200 return for Indians and ₹600 for foreigners. Nearby Elephanta Caves charge ₹40 for Indians and ₹600 for foreign visitors.',
+    unique: 'The Gateway of India holds a uniquely poignant place in history — the last British troops to leave India marched through this very arch in February 1948, symbolising the formal end of 200 years of colonial rule. Built to commemorate a royal arrival, it witnessed the final departure of the empire that built it.'
+  },
+  charminar: {
+    best_time: 'October to March offers pleasant weather for exploring Hyderabad. Visit on weekday mornings (8–10 AM) to avoid the enormous Laad Bazaar crowds. The monument is beautifully illuminated at night, making evening visits particularly atmospheric.',
+    photography: 'Shoot from the open area to the south for the classic symmetrical view. The Laad Bazaar surrounding the monument makes for vivid street photography. For an elevated perspective, climb the internal staircase during open hours (9 AM–5:30 PM). Night shots with the golden floodlighting are stunning.',
+    nearby: 'Surrounding the monument: Laad Bazaar (famous for pearl jewellery and glass bangles), Mecca Masjid (one of India\'s oldest and largest mosques), Chowmahalla Palace, and Salar Jung Museum — one of the world\'s largest one-person art collections.',
+    fees: 'Entry is ₹25 for Indian citizens and ₹300 for foreign nationals. Open daily 9:30 AM to 5:30 PM. Climbing to the minaret galleries costs ₹25 extra. The surrounding bazaars are free to explore.',
+    unique: 'The Charminar was built in 1591 not as a palace or mosque but as a monument to victory over a devastating plague. Its first floor contains the oldest mosque in Hyderabad. Each of the four minarets has exactly 149 steps — no more, no less — and the precision of this symmetry, built over 430 years ago, still astonishes engineers.'
+  },
+  shirdi: {
+    best_time: 'The temple is open year-round, 24 hours during major festivals. Weekday mornings (4–7 AM) during the first darshan are the most serene. Avoid festival days (Ramnavami, Diwali, Gurupurnima) unless you wish to experience the extraordinary devotion of massive pilgrim gatherings.',
+    photography: 'Photography is restricted inside the main sanctum out of respect for devotees. The temple complex, gardens, and the Dwarkamai mosque where Sai Baba lived are peaceful photography subjects. The golden hour light on the marble temple exterior is particularly beautiful.',
+    nearby: 'Within Shirdi: the Dwarkamai mosque (where Baba lived and kept his sacred fire burning), the Chavadi (where Baba slept on alternate nights), and the Lendi Garden (his meditation spot). Nashik city (with its famous ghats on the Godavari) is just 90 km away.',
+    fees: 'Entry to the temple is free. Prasad and special darshan passes have nominal charges. Accommodation in Shirdi ranges from free dharamshalas to premium hotels managed by the Sai Baba Sansthan Trust.',
+    unique: 'Sai Baba of Shirdi was unique in all of Indian spiritual history — a saint equally revered by both Hindus and Muslims who practised and preached both traditions simultaneously. He lived in a mosque, performed Hindu rites, and constantly taught "Sabka Malik Ek" (One God for all). He is today one of the most widely worshipped figures across all of South Asia.'
+  },
+  ramtemple: {
+    best_time: 'October to March is ideal. Mornings between 7–10 AM offer cooler temperatures and shorter queues. The consecration anniversary on January 22 draws enormous crowds of devotees from across India — plan well in advance if visiting around this date.',
+    photography: 'The pink Rajasthani sandstone glows magnificently in the golden hour. The main shikhara (tower) is best photographed from the southern entrance for full height. The intricately carved mandapa pillars offer extraordinary detail photography opportunities.',
+    nearby: 'Within Ayodhya: the Ram Ki Paidi ghats on the Sarayu river, Kanak Bhawan temple, Hanuman Garhi, and the Saryu Aarti (river prayer ceremony) at sunset. Lucknow (130 km) and Varanasi (200 km) are major nearby cities.',
+    fees: 'Entry is free for all visitors. The temple complex is managed by the Shri Ram Janmabhoomi Teerth Kshetra Trust. Special VIP darshan passes may be available for a nominal donation.',
+    unique: 'What makes the Ram Temple extraordinary is not just its religious significance but its engineering: the entire structure — 161 feet tall across three floors — was built using traditional Nagara stone joinery with absolutely no iron or steel anywhere in the construction. Pink sandstone from Rajasthan was specially quarried and shaped to interlock without metal fasteners, exactly as ancient temple builders did a thousand years ago.'
+  },
+  suntemple: {
+    best_time: 'October to February for pleasant Odisha weather. Sunrise visits are particularly meaningful — the temple was designed so the first rays of the rising sun illuminate the sanctum. Avoid the summer months (April–June) when coastal humidity and heat can be intense.',
+    photography: 'The 24 stone wheels are the most-photographed elements — they function as precise sundials accurate to the minute. Shoot the main chariot facade from the eastern approach in morning light. The erotic sculptures on the outer walls are extraordinary examples of medieval Indian art.',
+    nearby: 'Within 3 km: the Chandrabhaga beach (one of Odisha\'s finest). Within 65 km: Puri (with the famous Jagannath Temple and golden beaches). The Chilika Lake (Asia\'s largest lagoon) is about 100 km south.',
+    fees: 'Entry is ₹40 for Indian citizens and ₹600 for foreign nationals. Open from sunrise to sunset daily. The Archaeological Survey of India manages the site.',
+    unique: 'The Sun Temple\'s 24 stone chariot wheels are not decorative — they are precision sundials. By observing the shadow cast by the spokes on the wheel\'s inner surface, one can tell the exact time accurate to the minute. This engineering achievement was accomplished in stone around 1250 CE by craftsmen who understood astronomy, mathematics, and shadow geometry at an extraordinary level.'
+  },
+  thanjavur: {
+    best_time: 'October to March is ideal. Visit during the Tamil month of Karthigai (November–December) when the temple celebrates its grandest festival with thousands of lamps. The temple opens at 6 AM — early morning light on the 66-metre vimana is spectacular.',
+    photography: 'The vimana (tower) can only be fully photographed from the outer courtyard. The famous phenomenon — that the tower\'s shadow never falls on the surrounding ground — is a compelling photography challenge. The Nandi bull mandapa opposite the main shrine offers excellent framing.',
+    nearby: 'In Thanjavur: the Brihadeeswarar Palace complex (with the Saraswathi Mahal Library housing rare manuscripts), the art galleries, and the Thanjavur Maratha Palace. Kumbakonam (40 km) has extraordinary temple clusters including Airavatesvara temple.',
+    fees: 'Entry to the outer complex is free. The main vimana sanctum charges ₹50 for Indians and ₹500 for foreigners. Special photography permits are required for professional cameras.',
+    unique: 'The 80-tonne kumbam capstone at the very top of the 66-metre tower was placed there over 1,000 years ago without any crane machinery — using a 6-kilometre-long earthen ramp that was constructed specifically for this purpose and then dismantled. The shadow of this enormous tower, built with precise astronomical calculations, never falls on the temple\'s surrounding ground — a feat that still baffles modern engineers.'
+  },
+  meenakshi: {
+    best_time: 'October to March for comfortable weather. The Meenakshi Thirukalyanam festival (April/May) is the grandest in Tamil Nadu — the divine wedding of Meenakshi and Sundareswarar draws over a million pilgrims. Morning puja at 5:30 AM is a profoundly moving experience.',
+    photography: 'The 14 gopurams covered in 33,000 vivid sculptures are extraordinary photography subjects at any angle. The Thousand Pillared Hall offers stunning columns-in-perspective shots. Photography is restricted in the sanctum sanctorum — please respect temple rules.',
+    nearby: 'In Madurai: the Thirumalai Nayakkar Mahal (a 17th-century royal palace), Gandhi Memorial Museum, and the banks of the Vaigai river. Rameshwaram (150 km) and the Chettinad region (80 km) are excellent day trips.',
+    fees: 'Entry is free for all visitors. Camera fees apply: ₹50 for still cameras, ₹250 for video cameras. The temple is open 5 AM to 12:30 PM and 4 PM to 10 PM daily.',
+    unique: 'The Meenakshi Temple\'s Thousand Pillared Hall contains 985 uniquely carved pillars — no two are identical — and each one produces a different musical note when gently tapped. This extraordinary phenomenon of acoustic tuning in stone, achieved by medieval craftsmen without any electronic measuring equipment, continues to astonish acousticians and engineers who visit today.'
+  },
+  lotus: {
+    best_time: 'October to March for Delhi\'s pleasant winter. Visit on weekday mornings (9–10 AM) for the fewest visitors. The reflecting pools are most beautiful in winter light and after rain. Sunset light on the white marble petals is particularly serene.',
+    photography: 'The nine reflecting pools create the iconic illusion of the petals floating on water — shoot from pool level for this effect. Interior photography captures the 40-metre soaring central hall beautifully. Early morning and late afternoon provide the best soft light on the white Pentelic marble.',
+    nearby: 'On the metro-accessible south Delhi corridor: the Bahai Lotus Temple is near Nehru Place. Within 10 km: Humayun\'s Tomb (UNESCO World Heritage Site), Qutub Minar complex (UNESCO), and the Dilli Haat craft market.',
+    fees: 'Entry is completely free for all visitors of all faiths. Open Tuesday to Sunday, 9 AM to 7 PM (summer) and 9:30 AM to 5:30 PM (winter). Closed Mondays. No sermons or rituals are performed — visitors enter for quiet reflection.',
+    unique: 'The Lotus Temple is built using the exact same rare Pentelic marble quarried from Mount Pentelicus in Greece that was used to build the ancient Parthenon in Athens over 2,400 years ago. It has welcomed over 100 million visitors since 1986 — more than the Eiffel Tower or the Taj Mahal in that same period — making it one of the most visited buildings on Earth.'
+  },
+  indiagate: {
+    best_time: 'October to February for Delhi\'s pleasant winter. Visit after 7 PM when the monument is floodlit and the Amar Jawan Jyoti flame burns brilliantly. Republic Day (January 26) offers the extraordinary spectacle of India\'s military parade along Kartavya Path.',
+    photography: 'The best compositions are along the central axis of Kartavya Path looking toward Rashtrapati Bhavan. Night photography with the golden floodlighting is spectacular. The Amar Jawan Jyoti flame beneath the arch is a powerful close-up subject.',
+    nearby: 'Along Kartavya Path (formerly Rajpath): the National Museum, National Gallery of Modern Art, the Parliament House complex, and Rashtrapati Bhavan (the President\'s residence, open for public visits on select dates). The vibrant Khan Market is 1 km away.',
+    fees: 'Entry to the India Gate lawns and monument is completely free, open 24 hours. The surrounding Kartavya Path gardens are free. Nearby National Museum charges ₹20 for Indians and ₹650 for foreign visitors.',
+    unique: 'India Gate bears the names of 13,300 individual soldiers inscribed in its sandstone — each name carved by hand to honour a real person who died in the First World War. The Amar Jawan Jyoti (Eternal Flame) has burned continuously beneath the arch since Republic Day 1972, representing India\'s own soldiers who gave their lives in the 1971 Liberation War. The flame has never been extinguished in over 50 years.'
+  }
+};
+
+const GUIDE_QUESTIONS = [
+  { key: 'best_time',   label: m => `Best time to visit ${m.name}?` },
+  { key: 'photography', label: m => `Photography tips for ${m.name}?` },
+  { key: 'nearby',      label: m => `Nearby attractions near ${m.name}?` },
+  { key: 'fees',        label: m => `Entry fees and timings for ${m.name}?` },
+  { key: 'unique',      label: m => `What makes ${m.name} unique?` }
+];
+
+window.openAI=function(){
+  if(!activeMonument) return;
+  aiOpen=true;
+  const m=activeMonument;
+  document.getElementById('ai-monument-name').textContent=m.name;
+  document.getElementById('ai-badge').textContent='HERITAGE EXPLORER GUIDE';
+  document.getElementById('ai-badge').style.color=m.accent;
+  document.getElementById('ai-answer').style.display='none';
+  document.getElementById('ai-loading').style.display='none';
+  const qs=document.getElementById('ai-questions'); qs.innerHTML='';
+  GUIDE_QUESTIONS.forEach(({key,label})=>{
+    const btn=document.createElement('button');
+    btn.className='ai-q-btn'; btn.style.borderColor=m.accent+'33';
+    btn.textContent=label(m);
+    btn.onclick=()=>showGuideAnswer(key,m);
+    qs.appendChild(btn);
+  });
+  document.getElementById('ai-modal').classList.add('open');
+};
+
+window.closeAI=function(){aiOpen=false;document.getElementById('ai-modal').classList.remove('open');};
+
+function showGuideAnswer(key,m){
+  const ld=document.getElementById('ai-loading');
+  const an=document.getElementById('ai-answer');
+  ld.style.display='block'; an.style.display='none'; ld.style.color=m.accent;
+  // Simulate a brief loading state for smooth UX, then show local data
+  setTimeout(()=>{
+    const data=GUIDE_DATA[m.id];
+    const text=data?.[key]||`${m.name} is one of India's most treasured monuments. Explore it in person to discover its full story and beauty.`;
+    an.textContent=text;
+    an.style.borderColor=m.accent+'33';
+    ld.style.display='none';
+    an.style.display='block';
+  },350);
+}
+
+// ── RESIZE ───────────────────────────────────────────────────────────────────
+window.addEventListener('resize',()=>{
+  camera.aspect=window.innerWidth/window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth,window.innerHeight);
+});
+
+// ── TOUCH ────────────────────────────────────────────────────────────────────
+let ts=null;
+renderer.domElement.addEventListener('touchstart',e=>{ts={x:e.touches[0].clientX,y:e.touches[0].clientY};});
+renderer.domElement.addEventListener('touchend',e=>{
+  if(!ts) return;
+  const dx=Math.abs(e.changedTouches[0].clientX-ts.x);
+  const dy=Math.abs(e.changedTouches[0].clientY-ts.y);
+  if(dx<8&&dy<8){
+    raycaster.setFromCamera(ctr,camera);
+    const hits=raycaster.intersectObjects(scene.children,true);
+    const m=findMonumentFromHit(hits);
+    if(m) openPanel(m);
+  }
+  ts=null;
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Explore Odisha</title>
+
+<style>
+body{margin:0;font-family:Arial;background:#f4f4f4;}
+
+.hero{
+height:350px;
+background-image:linear-gradient(rgba(0,0,0,0.3),rgba(0,0,0,0.3)),
+url("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSw7Q_Ipsx2y6AMUxQu9dbaI0WDPDl_7Zk4Pg&s");
+background-size:cover;background-position:center;
+display:flex;flex-direction:column;justify-content:center;align-items:center;
+color:white;text-shadow:2px 2px 6px black;
+}
+
+.hero h1{font-size:50px;}
+
+.infoCards{display:flex;justify-content:center;gap:20px;margin-top:-40px;}
+.infoCard{background:white;padding:20px;width:180px;text-align:center;border-radius:8px;box-shadow:0 4px 8px rgba(0,0,0,0.2);}
+
+.sectionTitle{text-align:center;margin-top:50px;color:#FF9933;}
+
+.places{display:grid;grid-template-columns:repeat(3,1fr);gap:25px;padding:40px;}
+.placeCard{position:relative;cursor:pointer;border-radius:10px;overflow:hidden;transition:0.3s;}
+.placeCard:hover{transform:translateY(-10px);}
+.placeCard img{width:100%;height:220px;object-fit:cover;transition:0.5s;}
+.placeCard:hover img{transform:scale(1.1);}
+
+.overlay{position:absolute;bottom:0;background:rgba(0,0,0,0.6);color:white;width:100%;text-align:center;padding:10px;}
+
+.modal{position:fixed;width:100%;height:100%;background:rgba(0,0,0,0.7);display:none;justify-content:center;align-items:center;}
+.modalContent{background:white;padding:30px;width:500px;border-radius:8px;}
+.modalContent img{width:100%;height:250px;object-fit:cover;}
+.close{font-size:30px;cursor:pointer;}
+
+.cuisine{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;padding:40px;}
+.foodCard{background:white;text-align:center;padding:10px;}
+.foodCard img{width:100%;height:150px;object-fit:cover;}
+</style>
+</head>
+
+<body>
+
+<div class="hero">
+<h1>Explore Odisha</h1>
+<p>Land of Temples and Culture</p>
+</div>
+
+<div class="infoCards">
+<div class="infoCard"><h3>Capital</h3><p>Bhubaneswar</p></div>
+<div class="infoCard"><h3>Language</h3><p>Odia</p></div>
+<div class="infoCard"><h3>Best Time</h3><p>Oct – Feb</p></div>
+<div class="infoCard"><h3>Cities</h3><p>Puri, Cuttack</p></div>
+</div>
+
+<h2 class="sectionTitle">Famous Tourist Places</h2>
+
+<div class="places">
+
+<div class="placeCard" onclick="openModal('Konark Sun Temple','Famous UNESCO site known for its chariot-shaped architecture.','https://upload.wikimedia.org/wikipedia/commons/4/4a/Konark_Sun_Temple.jpg')">
+<img src="https://upload.wikimedia.org/wikipedia/commons/4/4a/Konark_Sun_Temple.jpg">
+<div class="overlay"><h3>Konark Temple</h3></div>
+</div>
+
+<div class="placeCard" onclick="openModal('Jagannath Temple','One of the Char Dham pilgrimage sites located in Puri.','https://upload.wikimedia.org/wikipedia/commons/3/3e/Jagannath_Temple.jpg')">
+<img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS8lbL0NkDTM23qkG02tfYL5bAoHl66Oi-iQQ&s">
+<div class="overlay"><h3>Jagannath Temple</h3></div>
+</div>
+
+<div class="placeCard" onclick="openModal('Chilika Lake','Asia’s largest brackish water lagoon famous for migratory birds.','https://upload.wikimedia.org/wikipedia/commons/6/6e/Chilika_Lake.jpg')">
+<img src="https://dynamic-media-cdn.tripadvisor.com/media/photo-o/09/52/39/02/chilika-lake.jpg?w=900&h=500&s=1">
+<div class="overlay"><h3>Chilika Lake</h3></div>
+</div>
+
+</div>
+
+<h2 class="sectionTitle">Famous Cuisine</h2>
+
+<div class="cuisine">
+<div class="foodCard"><img src="https://www.bunkarvalley.com/wp-content/uploads/2025/05/Dalma.jpg"><p>Dalma</p></div>
+<div class="foodCard"><img src="https://madhurasrecipe.com/wp-content/uploads/2023/10/Rasgulla-Featured-Image.jpg"><p>Rasgulla</p></div>
+<div class="foodCard"><img src="https://www.culturebook.in/wp-content/uploads/2024/10/Pakhala-Bhata.jpg"><p>Pakhala Bhata</p></div>
+<div class="foodCard"><img src="https://www.secondrecipe.com/wp-content/uploads/2020/03/chenna-poda-air-fryer-1.jpg"><p>Chhena Poda</p></div>
+</div>
+
+<div class="modal" id="modal">
+<div class="modalContent">
+<span class="close" onclick="closeModal()">&times;</span>
+<img id="modalImg">
+<h2 id="modalTitle"></h2>
+<p id="modalDesc"></p>
+</div>
+</div>
+
+<script>
+function openModal(t,d,i){
+modal.style.display="flex";
+modalTitle.innerText=t;
+modalDesc.innerText=d;
+modalImg.src=i;
+}
+function closeModal(){modal.style.display="none";}
+</script>
+
+</body>
+</html>
+

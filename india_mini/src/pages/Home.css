@@ -1,0 +1,571 @@
+/* Color Palette */
+.first-color { background: #468966; }
+.second-color { background: #fff0a5; }
+.third-color { background: #ffb03b; }
+.fourth-color { background: #b64926; }
+
+/* Global */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Main */
+.home {
+  background: #fff0a5;
+  font-family: "Georgia", serif;
+  padding-top: 80px; /* space for fixed navbar */
+}
+
+/* ================= NAVBAR ================= */
+
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  background: #468966;
+  color: #fff0a5;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  z-index: 9999;
+}
+
+.logo {
+  font-size: 22px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+
+/* Hamburger */
+.hamburger {
+  font-size: 30px;
+  cursor: pointer;
+  color: #fff0a5;
+  user-select: none;
+}
+
+/* Menu */
+.menu {
+  position: absolute;
+  top: 65px;
+  right: 20px;
+  background: #fff0a5;
+  list-style: none;
+  padding: 15px 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  min-width: 180px;
+}
+
+.menu li {
+  padding: 10px 0;
+  cursor: pointer;
+  color: #b64926;
+  font-weight: bold;
+}
+
+.menu li:hover {
+  color: #ffb03b;
+}
+
+/* ================= HERO SECTION ================= */
+
+.hero {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  padding: 60px;
+  background: #468966;
+  color: white;
+}
+
+.hero-text {
+  flex: 1;
+  padding: 20px;
+}
+
+.hero-text h1 {
+  font-size: 3.2rem;
+  color: #fff0a5;
+}
+
+.hero-text p {
+  font-size: 1.2rem;
+  margin: 20px 0;
+}
+
+.cta-btn {
+  background: #b64926;
+  color: white;
+  border: none;
+  padding: 14px 32px;
+  border-radius: 30px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.cta-btn:hover {
+  background: #ffb03b;
+  color: black;
+}
+
+/* ================= SLIDER ================= */
+
+.hero-slider {
+  flex: 1;
+  overflow: hidden;
+}
+
+.slider {
+  display: flex;
+  width: 300%;
+  animation: slide 54s infinite;
+}
+
+.slider img {
+  width: 100%;
+  height: 350px;
+  object-fit: cover;
+  border-radius: 20px;
+  margin-right: 10px;
+}
+
+@keyframes slide {
+  0% { transform: translateX(0); }
+  33% { transform: translateX(-100%); }
+  66% { transform: translateX(-200%); }
+  100% { transform: translateX(0); }
+}
+
+/* ================= SECTIONS ================= */
+
+.section {
+  padding: 70px 40px;
+  text-align: center;
+}
+
+.section h2 {
+  font-size: 2.2rem;
+  color: #b64926;
+  margin-bottom: 15px;
+}
+
+.section p {
+  max-width: 800px;
+  margin: auto;
+  font-size: 1.1rem;
+}
+
+/* Section Colors */
+.monuments { background: #ffb03b; }
+.dynasties { background: #fff0a5; }
+.timeline { background: #ffb03b; }
+.culture { background: #fff0a5; }
+
+/* ================= EXPLORE PAGE ================= */
+
+.explore-container {
+  min-height: 100vh;
+  padding: 100px 40px 60px;
+  background: #fff0a5;
+  font-family: "Georgia", serif;
+}
+
+.explore-container h1 {
+  text-align: center;
+  font-size: 40px;
+  color: #b64926;
+  margin-bottom: 20px;
+  letter-spacing: 1px;
+}
+
+.explore-intro {
+  max-width: 900px;
+  margin: 0 auto 50px;
+  text-align: center;
+  font-size: 18px;
+  line-height: 1.7;
+  color: #468966;
+}
+
+.fighters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 35px;
+  padding: 20px;
+}
+
+.fighter-card {
+  background: #ffffff;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.fighter-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.35);
+}
+
+.fighter-card img {
+  width: 100%;
+  height: 280px;
+  object-fit: cover;
+}
+
+.fighter-card h3 {
+  font-size: 22px;
+  margin: 15px 15px 10px;
+  color: #ffb03b;
+  text-align: center;
+}
+
+.fighter-card p {
+  padding: 0 18px 20px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: #333;
+  text-align: justify;
+}
+
+.history-text {
+  max-width: 800px;
+  margin: 20px auto;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: #333;
+  text-align: justify;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media (max-width: 768px) {
+  .hero {
+    padding: 40px 20px;
+  }
+
+  .hero-text h1 {
+    font-size: 2.4rem;
+  }
+
+  .explore-container {
+    padding: 90px 20px;
+  }
+
+  .explore-container h1 {
+    font-size: 32px;
+  }
+}
+
+.bg {
+   background: #fff0a5;
+  font-family: "Georgia", serif;
+  padding-top: 80px;
+}
+
+
+
+/* This hides the red error box from your screen */
+iframe#webpack-dev-server-client-overlay {
+  display: none !important;
+}
+
+#webpack-dev-server-client-overlay-div {
+  display: none !important;
+}
+
+.hero-images img{
+  width:150px;
+  height:200px;
+  object-fit:cover;
+  margin:10px;
+  border-radius:10px;
+}
+
+.card-container{
+  display:flex;
+  justify-content:center;
+  gap:30px;
+  margin-top:30px;
+}
+
+.card{
+  width:250px;
+  background:white;
+  border-radius:10px;
+  box-shadow:0 4px 10px rgba(0,0,0,0.2);
+  overflow:hidden;
+  text-align:center;
+}
+
+.card img{
+  width:100%;
+  height:180px;
+  object-fit:cover;
+}
+
+.features-grid{
+  display:flex;
+  justify-content:center;
+  gap:30px;
+  margin-top:20px;
+}
+
+.feature-box{
+  width:250px;
+  background:#f4f4f4;
+  padding:20px;
+  border-radius:10px;
+}
+
+.carousel{
+  width:420px;
+  height:260px;
+  overflow:hidden;
+  border-radius:12px;
+  box-shadow:0 5px 20px rgba(0,0,0,0.3);
+}
+
+.carousel img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  transition:1s ease;
+}
+
+/* GLOBAL */
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+}
+
+.home {
+  background: #fff;
+}
+
+/* ================= NAVBAR ================= */
+
+.navbar {
+  position: fixed;
+  width: 100%;
+  top: 0;
+  left: 0;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 15px 30px;
+  background: rgba(0,0,0,0.6);
+  color: white;
+  backdrop-filter: blur(10px);
+  z-index: 1000;
+}
+
+/* LOGO */
+.logo {
+  font-size: 22px;
+  font-weight: bold;
+}
+
+/* NAV LINKS */
+.nav-links {
+  display: flex;
+  gap: 30px;
+  list-style: none;
+  align-items: center;
+}
+
+.nav-links li {
+  cursor: pointer;
+  white-space: nowrap;
+  transition: 0.3s;
+  font-weight: 500;
+}
+
+.nav-links li:hover {
+  color: #ffb03b;
+}
+
+/* HAMBURGER */
+.hamburger {
+  display: none;
+  font-size: 26px;
+  cursor: pointer;
+}
+
+/* ================= HERO ================= */
+
+.hero {
+  height: 100vh;
+  background: url("../assets/tajmahal.jpg") center/cover no-repeat;
+  position: relative;
+}
+
+.overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  color: white;
+  background: rgba(0,0,0,0.5);
+  padding: 40px;
+  border-radius: 10px;
+}
+
+.overlay h1 {
+  font-size: 3rem;
+}
+
+.overlay button {
+  margin-top: 20px;
+  padding: 12px 25px;
+  border: none;
+  background: #ffb03b;
+  color: black;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 25px;
+  transition: 0.3s;
+}
+
+.overlay button:hover {
+  background: white;
+  transform: scale(1.05);
+}
+
+/* ================= SECTIONS ================= */
+
+.section {
+  padding: 80px 40px;
+  text-align: center;
+}
+
+.section h2 {
+  font-size: 2.5rem;
+  margin-bottom: 30px;
+}
+
+/* ================= CARDS ================= */
+
+.card-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px,1fr));
+  gap: 30px;
+}
+
+.card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 10px;
+}
+
+.card img {
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+  transition: 0.5s;
+}
+
+.card:hover img {
+  transform: scale(1.1);
+}
+
+.card h3 {
+  position: absolute;
+  bottom: 10px;
+  left: 15px;
+  color: white;
+}
+
+/* ================= PARALLAX ================= */
+
+.parallax {
+  height: 300px;
+  background: url("../assets/meenakshi.jpg") center/cover fixed;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-size: 2rem;
+  text-align: center;
+  padding: 20px;
+}
+
+/* ================= FEATURES ================= */
+
+.features-grid {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+
+.feature-box {
+  width: 250px;
+  padding: 20px;
+  background: white;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  border-radius: 10px;
+  transition: 0.3s;
+}
+
+.feature-box:hover {
+  transform: translateY(-10px);
+}
+
+/* ================= FOOTER ================= */
+
+.footer {
+  background: #fff0a5;
+  color: white;
+  text-align: center;
+  padding: 20px;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media (max-width: 768px) {
+
+  .hamburger {
+    display: block;
+  }
+
+  .nav-links {
+    position: absolute;
+    top: 65px;
+    right: 20px;
+    background: rgba(0,0,0,0.95);
+    flex-direction: column;
+    padding: 15px 25px;
+    border-radius: 10px;
+
+    display: none;
+
+    transform: translateY(-20px);
+    opacity: 0;
+    transition: 0.3s;
+  }
+
+  .nav-links.active {
+    display: flex;
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  .nav-links li {
+    padding: 10px 0;
+  }
+}
+
+/* SMOOTH SCROLL */
+html {
+  scroll-behavior: smooth;
+}

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+  <script src="aframe-ar-main/dist/aframe-ar.min.js"></script>
+  <style> body { margin: 0; overflow: hidden; } </style>
+</head>
+<body>
+  <script>
+    function showMessage(message) {
+      const hud = document.querySelector("#hud");
+      if (hud) hud.setAttribute("value", message);
+    }
+
+    AFRAME.registerComponent("ar-logic", {
+      init: function () { showMessage("ar-logic running"); },
+      tick: function () {
+        const cam = document.querySelector("#cam");
+        if (!cam) return;
+        showMessage("cam detected");
+
+        const collision = cam.components.raycaster?.getIntersection(this.el);
+        if (!collision) return;
+
+        showMessage(
+          "Occurred collision " +
+          collision.point.x.toFixed(2) + " " +
+          collision.point.z.toFixed(2)
+        );
+
+        const circle = document.querySelector("#circle");
+        if (circle) circle.setAttribute("position", collision.point);
+      },
+    });
+  </script>
+
+  <a-scene ar ar-logic>
+    <a-camera id="cam" raycaster="objects:none;">
+      <a-text
+        id="hud"
+        value="KittyPanda"
+        position="0 0.1 -0.25"
+        align="center"
+        wrap-count="800"
+      ></a-text>
+    </a-camera>
+    <a-ring
+      id="circle"
+      rotation="-90 0 0"
+      radius-inner="0.01"
+      radius-outer="0.02"
+    ></a-ring>
+    <a-gltf-model
+      id="box"
+      src="model/taj.glb"
+      scale="0.0001 0.0001 0.0001"
+      position="0 0 -1"
+    ></a-gltf-model>
+  </a-scene>
+</body>
+</html>

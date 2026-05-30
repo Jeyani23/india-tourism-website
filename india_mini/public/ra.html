@@ -1,0 +1,277 @@
+Rajasthan
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Explore Rajasthan</title>
+
+<style>
+
+body{
+margin:0;
+font-family:Arial;
+background:#f4f4f4;
+}
+
+/* HERO */
+.hero{
+height:350px;
+background-image:linear-gradient(rgba(0,0,0,0.3),rgba(0,0,0,0.3)),
+url("https://upload.wikimedia.org/wikipedia/commons/9/9e/Hawa_Mahal.jpg");
+background-size:cover;
+background-position:center;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+color:white;
+text-shadow:2px 2px 6px black;
+}
+
+.hero h1{font-size:50px}
+
+/* INFO CARDS */
+.infoCards{
+display:flex;
+justify-content:center;
+gap:20px;
+margin-top:-40px;
+}
+
+.infoCard{
+background:white;
+padding:20px;
+width:180px;
+text-align:center;
+border-radius:8px;
+box-shadow:0 4px 8px rgba(0,0,0,0.2);
+}
+
+/* SECTION TITLE */
+.sectionTitle{
+text-align:center;
+margin-top:50px;
+color:#FF9933;
+}
+
+/* PLACES GRID */
+.places{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:25px;
+padding:40px;
+}
+
+.placeCard{
+position:relative;
+cursor:pointer;
+overflow:hidden;
+border-radius:10px;
+transition:transform 0.3s,box-shadow 0.3s;
+}
+
+.placeCard:hover{
+transform:translateY(-10px);
+box-shadow:0 10px 20px rgba(0,0,0,0.3);
+}
+
+.placeCard img{
+width:100%;
+height:220px;
+object-fit:cover;
+transition:transform 0.5s;
+}
+
+.placeCard:hover img{
+transform:scale(1.1);
+}
+
+.overlay{
+position:absolute;
+bottom:0;
+background:rgba(0,0,0,0.6);
+color:white;
+width:100%;
+text-align:center;
+padding:10px;
+}
+
+/* FADE */
+.fadeIn{
+opacity:0;
+animation:fade 1.2s forwards;
+}
+
+@keyframes fade{
+from{opacity:0;transform:translateY(20px);}
+to{opacity:1;transform:translateY(0);}
+}
+
+/* MODAL */
+.modal{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.7);
+display:none;
+justify-content:center;
+align-items:center;
+}
+
+.modalContent{
+background:white;
+padding:30px;
+width:500px;
+border-radius:8px;
+transform:scale(0.8);
+animation:pop 0.4s forwards;
+}
+
+@keyframes pop{
+from{transform:scale(0.8);opacity:0;}
+to{transform:scale(1);opacity:1;}
+}
+
+.modalContent img{
+width:100%;
+height:250px;
+object-fit:cover;
+}
+
+.close{
+float:right;
+font-size:30px;
+cursor:pointer;
+}
+
+/* CUISINE */
+.cuisine{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:20px;
+padding:40px;
+}
+
+.foodCard{
+background:white;
+text-align:center;
+padding:10px;
+box-shadow:0 3px 6px rgba(0,0,0,0.2);
+}
+
+.foodCard img{
+width:100%;
+height:150px;
+object-fit:cover;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="hero">
+<h1>Explore Rajasthan</h1>
+<p>Land of Kings and Deserts</p>
+</div>
+
+<div class="infoCards">
+<div class="infoCard"><h3>Capital</h3><p>Jaipur</p></div>
+<div class="infoCard"><h3>Language</h3><p>Hindi, Rajasthani</p></div>
+<div class="infoCard"><h3>Best Time</h3><p>Nov – Feb</p></div>
+<div class="infoCard"><h3>Cities</h3><p>Jaipur, Udaipur, Jodhpur</p></div>
+</div>
+
+<h2 class="sectionTitle">Famous Tourist Places</h2>
+
+<div class="places fadeIn">
+
+<div class="placeCard" onclick="openModal('Hawa Mahal','Hawa Mahal in Jaipur is known as the Palace of Winds. It has 953 small windows designed for royal ladies.','https://upload.wikimedia.org/wikipedia/commons/9/9e/Hawa_Mahal.jpg')">
+<img src="https://upload.wikimedia.org/wikipedia/commons/9/9e/Hawa_Mahal.jpg">
+<div class="overlay"><h3>Hawa Mahal</h3></div>
+</div>
+
+<div class="placeCard" onclick="openModal('Amber Fort','Amber Fort is a grand fort located in Jaipur known for its artistic architecture and elephant rides.','https://upload.wikimedia.org/wikipedia/commons/0/0c/Amber_Fort.jpg')">
+<img src="https://upload.wikimedia.org/wikipedia/commons/0/0c/Amber_Fort.jpg">
+<div class="overlay"><h3>Amber Fort</h3></div>
+</div>
+
+<div class="placeCard" onclick="openModal('Jaisalmer Fort','Jaisalmer Fort is also called the Golden Fort and is built with yellow sandstone.','https://upload.wikimedia.org/wikipedia/commons/3/3c/Jaisalmer_Fort.jpg')">
+<img src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Jaisalmer_Fort.jpg">
+<div class="overlay"><h3>Jaisalmer Fort</h3></div>
+</div>
+
+<div class="placeCard" onclick="openModal('Udaipur City Palace','City Palace in Udaipur offers beautiful lake views and royal architecture.','https://upload.wikimedia.org/wikipedia/commons/6/6e/City_Palace_Udaipur.jpg')">
+<img src="https://upload.wikimedia.org/wikipedia/commons/6/6e/City_Palace_Udaipur.jpg">
+<div class="overlay"><h3>City Palace</h3></div>
+</div>
+
+<div class="placeCard" onclick="openModal('Thar Desert','The Thar Desert is known for camel rides, sand dunes and desert camps.','https://upload.wikimedia.org/wikipedia/commons/0/0f/Thar_Desert.jpg')">
+<img src="https://upload.wikimedia.org/wikipedia/commons/0/0f/Thar_Desert.jpg">
+<div class="overlay"><h3>Thar Desert</h3></div>
+</div>
+
+<div class="placeCard" onclick="openModal('Mehrangarh Fort','Mehrangarh Fort in Jodhpur is one of the largest forts in India with stunning views.','https://upload.wikimedia.org/wikipedia/commons/5/5e/Mehrangarh_Fort.jpg')">
+<img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Mehrangarh_Fort.jpg">
+<div class="overlay"><h3>Mehrangarh Fort</h3></div>
+</div>
+
+</div>
+
+<h2 class="sectionTitle">Famous Cuisine</h2>
+
+<div class="cuisine">
+
+<div class="foodCard">
+<img src="https://upload.wikimedia.org/wikipedia/commons/4/4e/Dal_Baati_Churma.jpg">
+<p>Dal Baati Churma</p>
+</div>
+
+<div class="foodCard">
+<img src="https://upload.wikimedia.org/wikipedia/commons/3/3f/Gatte_ki_sabzi.jpg">
+<p>Gatte Ki Sabzi</p>
+</div>
+
+<div class="foodCard">
+<img src="https://upload.wikimedia.org/wikipedia/commons/7/7b/Ker_Sangri.jpg">
+<p>Ker Sangri</p>
+</div>
+
+<div class="foodCard">
+<img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Ghevar.jpg">
+<p>Ghevar</p>
+</div>
+
+</div>
+
+<!-- MODAL -->
+<div class="modal" id="modal">
+<div class="modalContent">
+<span class="close" onclick="closeModal()">&times;</span>
+<img id="modalImg">
+<h2 id="modalTitle"></h2>
+<p id="modalDesc"></p>
+</div>
+</div>
+
+<script>
+
+function openModal(title,desc,img){
+document.getElementById("modal").style.display="flex"
+document.getElementById("modalTitle").innerText=title
+document.getElementById("modalDesc").innerText=desc
+document.getElementById("modalImg").src=img
+}
+
+function closeModal(){
+document.getElementById("modal").style.display="none"
+}
+
+</script>
+
+</body>
+</html>
+
