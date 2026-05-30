@@ -43,7 +43,7 @@ Features
 
 ### Installation
 
-    Clone Repository
+   Clone Repository
    
    ```bash
    git clone https://github.com/Jeyani23/india-tourism-website.git
