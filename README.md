@@ -79,12 +79,12 @@ Features
 
 ### Author
 
-   J. Jeyani
-   B.E. Computer Science and Engineering
-   Kamaraj College of Engineering and Technology
+       J. Jeyani
+       B.E. Computer Science and Engineering
+       Kamaraj College of Engineering and Technology
 
 
 
 ### License
 
-   This project is developed for educational and academic purposes for my 3rd year mini project.
+       This project is developed for educational and academic purposes for my 3rd year mini project.
