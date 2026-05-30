@@ -23,47 +23,47 @@ Features
 
 ### Tech Stack
 
- Frontend
-
-  * React.js
-  * HTML5
-  * CSS3
-  * JavaScript
-
- Backend
-
-  * Python
-  * Flask
-  * REST API
-
- Database
-
-  * SQLite / Database integration
+    Frontend
+   
+     * React.js
+     * HTML5
+     * CSS3
+     * JavaScript
+   
+    Backend
+   
+     * Python
+     * Flask
+     * REST API
+   
+    Database
+   
+     * SQLite / Database integration
 
 
 ### Installation
 
- Clone Repository
-
-```bash
-git clone https://github.com/Jeyani23/india-tourism-website.git
-cd india-tourism-website
-```
-
-Frontend Setup
-
-  ```bash
-  cd india_mini
-  npm install
-  npm start
-  ```
-Backend Setup
-
-  ```bash
-  cd backend
-  pip install -r requirements.txt
-  python app.py
-  ```
+    Clone Repository
+   
+   ```bash
+   git clone https://github.com/Jeyani23/india-tourism-website.git
+   cd india-tourism-website
+   ```
+   
+   Frontend Setup
+   
+     ```bash
+     cd india_mini
+     npm install
+     npm start
+     ```
+   Backend Setup
+   
+     ```bash
+     cd backend
+     pip install -r requirements.txt
+     python app.py
+     ```
 
 
 
@@ -79,13 +79,12 @@ Backend Setup
 
 ### Author
 
-  J. Jeyani
-  
-  B.E. Computer Science and Engineering
-  Kamaraj College of Engineering and Technology
+   J. Jeyani
+   B.E. Computer Science and Engineering
+   Kamaraj College of Engineering and Technology
 
 
 
 ### License
 
-  This project is developed for educational and academic purposes for my 3rd year mini project.
+   This project is developed for educational and academic purposes for my 3rd year mini project.
