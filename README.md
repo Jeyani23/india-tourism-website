@@ -1,4 +1,4 @@
- 🇮🇳 India Tourism Web Application
+### India Tourism Web Application
 
 Overview
 India Tourism Web Application is a full-stack web platform designed to help tourists explore India's famous destinations, heritage sites, culture, and travel information through an interactive and user-friendly interface.
@@ -18,7 +18,7 @@ Features
 
 
 
-Tech Stack
+### Tech Stack
 
  Frontend
 
@@ -38,7 +38,7 @@ Tech Stack
   * SQLite / Database integration
 
 
-Installation
+### Installation
 
  Clone Repository
 
@@ -64,7 +64,7 @@ Backend Setup
 
 
 
- Future Enhancements
+### Future Enhancements
 
   * AR/VR-based virtual tourism experience
   * Personalized travel recommendations
@@ -74,7 +74,7 @@ Backend Setup
 
 
 
-Author
+### Author
 
   J. Jeyani
   
@@ -83,6 +83,6 @@ Author
 
 
 
-License
+### License
 
   This project is developed for educational and academic purposes for my 3rd year mini project.
